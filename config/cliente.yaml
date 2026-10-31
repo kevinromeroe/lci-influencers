@@ -1,0 +1,43 @@
+# =============================================================
+# Cliente: LCI Bogotá — reporte de campañas de influencers
+# =============================================================
+
+client:
+  id: lci
+  name: LCI Bogotá
+  handle: lcibogota
+  timezone: America/Bogota
+
+  deploy:
+    repo: kevinromeroe/lci-influencers
+    branch: main
+    domain: influencermarketing.datalitica.com.co   # también en el archivo CNAME
+
+# =============================================================
+# EMV y ROI — benchmark entregado por LCI (valores conservadores, COP)
+# EMV = me gusta × like + comentarios × comment + compartidos × share + guardados × save
+# ROI (%) = (EMV − inversión) ÷ inversión × 100
+# =============================================================
+emv:
+  moneda: COP
+  valores:
+    like: 7200
+    comment: 10500
+    share: 12350
+    save: 13560
+
+# =============================================================
+# Reglas analíticas
+# =============================================================
+analytics:
+  baseline_reels: 12              # últimos reels no fijados del creador para la mediana
+  comentarios_max: 100            # comentarios leídos por publicación
+  capturas_dias: [7, 30]          # días después de publicada (corte del reporte y cifra final)
+
+# Benchmark de industria: lo entrega LCI más adelante. Mientras esté vacío,
+# la sección "Frente a su industria" no aparece en el reporte.
+benchmark_industria: {}
+
+llm:
+  provider: gemini
+  model: gemini-3.8-flash         # override: variable de entorno GEMINI_MODEL

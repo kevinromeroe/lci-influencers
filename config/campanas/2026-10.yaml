@@ -1,0 +1,115 @@
+# =============================================================
+# Campaña: reels pagados de octubre 2026
+#
+# Cada creador lleva sus publicaciones para LCI. Las métricas de esta
+# campaña vienen de las fichas aprobadas por el cliente (corte 16 oct 2026).
+# Cuando corra la ingesta, las métricas y los reels de comparación se
+# actualizan desde Supabase y estos valores quedan como respaldo.
+#
+# Los textos (por qué destacan, conversación, causa) son curados:
+# se revisan a mano antes de publicar.
+# =============================================================
+
+campaign:
+  id: "2026-10"
+  name: Reels pagados de octubre 2026
+  corte: "2026-10-16"
+
+creators:
+  - handle: estebango__
+    network: ig
+    name: Esteban Go
+    niche: Interiorismo sostenible
+    followers: 511536
+    avatar: estebango__.jpg
+
+    publications:
+      - id: DeMoyRYOinH
+        network: ig
+        format: Reel
+        posted_on: "2026-10-07"
+        url: https://www.instagram.com/reel/DeMoyRYOinH/
+        type: Colaboración pagada
+        payment_cop: null           # lo entrega LCI con el pedido
+        metrics: {views: 71500, likes: 4449, comments: 40}
+
+    # Últimos reels del creador, del más antiguo al más reciente.
+    # `lci: true` marca la publicación de la campaña. Las fechas de los demás
+    # reels llegan con la primera ingesta.
+    baseline:
+      - {views: 231000}
+      - {views: 131000}
+      - {views: 232000}
+      - {views: 442000, mark: A}
+      - {views: 239000}
+      - {views: 441000, mark: B}
+      - {views: 71500, posted_on: "2026-10-07", lci: true}
+      - {views: 254000}
+      - {views: 123000}
+      - {views: 529000, mark: C}
+      - {views: 151000}
+      - {views: 92500}
+
+    # Reels destacados (código de la publicación → letra del gráfico)
+    marks: {Dd6ib_mhMnk: A, DeID0n4M2Oc: B, DeZUoofgDfR: C}
+    why:
+      - [A, Consumismo y efecto Diderot, "Tema cotidiano que abrió conversación: el comentario más votado suma 2.113 me gusta."]
+      - [B, Colaboración con @lu.beccassino, "Publicación conjunta: el reel llegó a las dos audiencias. El comentario más votado («Bésense») suma 2.367 me gusta."]
+      - [C, Propiedad digital y piratería, "Tema polémico: 605 comentarios y uno con 10.483 me gusta («si comprar no es tener, piratear no es robar»)."]
+    cause: "El reel de LCI trató un tema de nicho (arquitectura bogotana); sus reels más vistos son temas de debate general o colaboraciones."
+    talk:                           # con captura, conteos y top 3 salen de la captura
+      read: 37
+      pos: 14
+      neu: 17
+      neg: 6
+      note: "Los dos comentarios más votados celebran el anuncio (147 y 131 me gusta) y otro destaca que el creador revisó el pensum. Un hilo de 9 comentarios debatió si el ladrillo resiste los sismos. Las 6 críticas apuntan a la forma de hablar del creador o a la sostenibilidad del ladrillo; ninguna a LCI."
+      line: "14 de 37 comentarios del público son positivos y solo 6 son críticos, ninguno contra LCI. Una sola persona preguntó por la carrera."
+      top:
+        - ["Me la comí completa 💋", 147]
+        - ["Ojala todos los anuncios fueran así, mijo 😔✊", 131]
+        - ["Tremendo comercial me tragueee", 53]
+
+  - handle: unareinadeldrama
+    network: ig
+    name: Una Reina del Drama
+    niche: Diseño UX
+    followers: 108923
+    avatar: unareinadeldrama.jpg
+
+    publications:
+      - id: DePf9BMupqx
+        network: ig
+        format: Reel
+        posted_on: "2026-10-08"         # la ficha decía 9 oct; Instagram confirma el 8
+        url: https://www.instagram.com/reel/DePf9BMupqx/
+        type: Colaboración pagada
+        payment_cop: null
+        metrics: {views: 10400, likes: 292, comments: 6}
+
+    baseline:
+      - {views: 28100}
+      - {views: 18100}
+      - {views: 74300, mark: A}
+      - {views: 39200}
+      - {views: 19000}
+      - {views: 18600}
+      - {views: 10400, posted_on: "2026-10-08", lci: true}
+      - {views: 10600}
+      - {views: 278000, mark: B}
+
+    marks: {DcjZgVFO0eZ: A, Dee3j09uwgy: B}
+    why:
+      - [A, Entrevista con Andrés Cepeda, "Publicación conjunta con @andrescepeda: llegó también a la audiencia del cantante."]
+      - [B, Publicidad para Intibon, "También pagado: un sketch con historia. El comentario más votado, «esa publicidad sin IA sí nos gusta», suma 6.510 me gusta."]
+    cause: "Su reel más visto también es pagado (Intibon, 384K): un sketch narrativo. El formato pesa más que el hecho de ser publicidad."
+    talk:
+      read: 3
+      pos: 3
+      neu: 0
+      neg: 0
+      note: "Conversación corta y positiva. La audiencia se identificó con la profesión y aceptó la integración de la marca."
+      line: "3 de 3 comentarios leídos son positivos, pero el volumen fue bajo (6 comentarios)."
+      top:
+        - ["Cómo comerte una publicidad en 5 min… buenísimo el chisme", 6]
+        - ["Ayyy yo soy UX 💅", 2]
+        - ["Soy top ❤️🔥", 1]
