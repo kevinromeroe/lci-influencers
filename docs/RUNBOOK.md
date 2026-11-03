@@ -51,7 +51,7 @@ Buenas prácticas con Instagram: pocas consultas y espaciadas. Si responde "Plea
 
 ## Registrar el pago de un influencer
 
-Poner el valor en `payment_cop` de la publicación. La tarjeta ROI pasa de "positivo hasta…" al porcentaje, sin tocar nada más.
+Poner en `payment_cop` de la publicación el valor para LCI del talento dividido entre su número de acciones (p. ej. $10.893.260 ÷ 4). La tarjeta ROI pasa de "—" al porcentaje.
 
 ## Verificación antes de avisar al cliente
 

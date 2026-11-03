@@ -277,9 +277,9 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
     return s;
   }
 
-  function roiTile(emv, pay, roi, txt){
-    if (roi !== null) return '<div class="kpi money"><span class="l">ROI</span><span class="v num '+(roi>=0?'good':'warn')+'">'+roiTxt(roi)+'</span><span class="d">Inversión: '+copM(pay)+'</span></div>';
-    return '<div class="kpi money"><span class="l">ROI</span><span class="v num">'+copM(emv)+'</span><span class="d">'+txt+'</span></div>';
+  function roiTile(emv, pay, roi, txt, note){
+    if (roi !== null) return '<div class="kpi money"><span class="l">ROI</span><span class="v num '+(roi>=0?'good':'warn')+'">'+roiTxt(roi)+'</span><span class="d">Inversión: '+copM(pay)+(note?' ('+note+')':'')+'</span></div>';
+    return '<div class="kpi money"><span class="l">ROI</span><span class="v num">—</span><span class="d">'+txt+'</span></div>';
   }
 
   function render(c){
@@ -298,7 +298,7 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
         '<div class="kpi"><span class="l">Frente a su contenido habitual</span><span class="v num '+(c.idx<1?'warn':'good')+'">'+n2.format(c.idx)+'×</span><span class="d">Mediana de sus reels: '+k(c.med)+'</span></div>'+
         '<div class="kpi"><span class="l">Comentarios positivos</span><span class="v num">'+nf.format(tk.pos/tk.read*100)+' %</span><span class="d">'+tk.pos+' de '+tk.read+' leídos</span></div>'+
         '<div class="kpi money"><span class="l">EMV</span><span class="v num">'+copM(c.t.emv)+'</span><span class="d">Valor mediático en COP</span></div>'+
-        roiTile(c.t.emv, c.t.pay, c.roi, 'Es positivo si el pago fue menor a este valor')+
+        roiTile(c.t.emv, c.t.pay, c.roi, 'Pendiente del valor pagado', c.roiNote)+
       '</section>'+
 
       '<section class="panel" aria-labelledby="h-c"><h2 id="h-c">Conclusiones</h2><ul class="concl">'+
@@ -306,7 +306,7 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
         '<li><span>Rindió <b>'+n2.format(c.idx)+'× frente a su contenido habitual</b>'+(c.isMin?': fue el de menos reproducciones entre sus últimos '+c.reels.length+' reels':'')+'. '+c.cause+'</span></li>'+
         '<li><span>La conversación fue <b>favorable</b>: '+c.talkLine+'</span></li>'+
         '<li><span>Generó un <b>EMV de '+cop(c.t.emv)+'</b> (me gusta × '+cop(V.like)+' + comentarios × '+cop(V.comment)+'). '+
-          (c.roi!==null ? 'Con un pago de '+cop(c.t.pay)+', el ROI fue de '+roiTxt(c.roi)+'.' : 'El ROI es positivo si el pago fue menor a ese valor.')+'</span></li>'+
+          (c.roi!==null ? 'Con un pago de '+cop(c.t.pay)+', el ROI fue de '+roiTxt(c.roi)+(c.roiNote?' ('+c.roiNote+' para tener su ROI completo; estamos a la espera de esa información)':'')+'.' : 'El ROI se calcula cuando LCI confirme el valor pagado.')+'</span></li>'+
       '</ul></section>'+
 
       '<section class="panel" aria-labelledby="h-g"><h2 id="h-g">Reel de LCI frente a sus últimos '+c.reels.length+' reels</h2>'+
@@ -330,6 +330,9 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
     return '<div class="split">'+FORMATS.map(function(f){var n=formats[f[0]]||0; return '<span><b>'+n+'</b> '+(n===1?f[0].toLowerCase():f[1])+'</span>';}).join('')+'</div>';
   }
 
+  // Nota del ROI total cuando a algún influencer le faltan acciones por medir
+  var PENDING = (function(){var p=C.filter(function(c){return c.roiNote;}); return p.length ? 'parcial: '+p.map(function(c){return 'a '+c.name+' '+c.roiNote;}).join('; ') : null;})();
+
   function renderAll(){
     document.getElementById('view').innerHTML =
       '<section class="who" aria-label="Campaña">'+
@@ -345,7 +348,7 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
         '<div class="kpi"><span class="l">Interacciones</span><span class="v num">'+int(T.inter)+'</span><span class="d">'+int(T.likes)+' me gusta y '+int(T.comments)+' comentarios</span></div>'+
         '<div class="kpi"><span class="l">Engagement</span><span class="v num">'+pct(T.inter/T.views)+'</span><span class="d">Interacciones ÷ reproducciones</span></div>'+
         '<div class="kpi"><span class="l">Influencers</span><span class="v num">'+C.length+'</span><span class="d">'+POSTS.length+' publicaciones pagas</span></div>'+
-        roiTile(T.emv, T.pay, T.roi, 'Es positivo si la inversión total fue menor a este valor')+
+        roiTile(T.emv, T.pay, T.roi, 'Pendiente del valor pagado', PENDING)+
       '</section>'+
 
       '<section class="panel" aria-labelledby="h-n"><h2 id="h-n">Resultados por red</h2>'+
@@ -365,7 +368,7 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
           '<td><div class="cell"><span class="av">'+face(c)+'</span><span><button type="button" class="go" data-go="'+c.id+'">'+c.name+'</button><small>@'+c.handle+'</small></span></div></td>'+
           '<td><span class="niche">'+c.niche+'</span></td><td class="r num">'+int(c.followers)+'</td><td class="r num">'+c.posts.length+'</td><td class="r num">'+pct(c.er)+'</td>'+
           '<td class="r num">'+n2.format(c.idx)+'×</td><td class="r num"><b>'+copM(c.t.emv)+'</b></td>'+
-          '<td class="r num">'+(c.roi!==null?roiTxt(c.roi):'<small style="color:var(--muted)">positivo bajo '+copM(c.t.emv)+'</small>')+'</td></tr>';}).join('')+
+          '<td class="r num">'+(c.roi!==null?roiTxt(c.roi)+(c.roiNote?'<small style="color:var(--muted);display:block">('+c.roiNote+')</small>':''):'<small style="color:var(--muted)">—</small>')+'</td></tr>';}).join('')+
       '</tbody></table></div></section>'+
 
       '<section class="panel" aria-labelledby="h-pp"><h2 id="h-pp">Publicaciones por EMV</h2><div class="tw"><table>'+

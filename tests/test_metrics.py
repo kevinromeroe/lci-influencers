@@ -49,8 +49,13 @@ class CuadreOctubre(unittest.TestCase):
         emvs = [p["emv"] for p in self.data["posts"]]
         self.assertEqual(emvs, sorted(emvs, reverse=True))
 
+    def test_pago_por_accion(self):
+        # Valor para LCI ÷ número de acciones del talento
+        self.assertEqual(self.by["estebango__"]["t"]["pay"], 8_904_056)
+        self.assertEqual(self.by["unareinadeldrama"]["t"]["pay"], round(10_893_260 / 4))
+        self.assertEqual(self.data["totals"]["pay"], 8_904_056 + 2_723_315)
+
     def test_roi_solo_con_pago(self):
-        self.assertIsNone(self.data["totals"]["roi"])
         self.assertIsNone(roi(1000, None))
         self.assertEqual(roi(3000, 1000), 2.0)
 
@@ -88,6 +93,11 @@ class CapturaOctubre(unittest.TestCase):
 
     def test_total(self):
         self.assertEqual(self.data["totals"]["emv"], 37_087_200)
+
+    def test_roi(self):
+        self.assertEqual(round(self.by["estebango__"]["roi"] * 100), 291)
+        self.assertEqual(round(self.by["unareinadeldrama"]["roi"] * 100), -18)
+        self.assertEqual(round(self.data["totals"]["roi"] * 100), 219)
 
     def test_conversacion_desde_la_captura(self):
         t = self.by["estebango__"]["talk"]

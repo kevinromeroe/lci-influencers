@@ -18,7 +18,7 @@ Cada pestaña tiene su PDF en `/<campaña>/pdf/<pestaña>.pdf`, que baja el bot�
 Todas se calculan una sola vez en [`pipeline/metrics.py`](pipeline/metrics.py); la plantilla solo las formatea.
 
 - **EMV** = me gusta × $7.200 + comentarios × $10.500 + compartidos × $12.350 + guardados × $13.560 (benchmark de LCI, en [`config/cliente.yaml`](config/cliente.yaml)).
-- **ROI** = (EMV − inversión) ÷ inversión. Mientras no haya pago, la tarjeta muestra el valor hasta el que el ROI es positivo.
+- **ROI** = (EMV − inversión) ÷ inversión. La inversión de cada publicación es el valor para LCI del talento ÷ su número de acciones. Sin ese valor, la tarjeta muestra "—".
 - **Engagement** = (me gusta + comentarios) ÷ reproducciones.
 - **Frente a su contenido habitual** = reproducciones del reel de LCI ÷ mediana de los otros reels recientes del influencer, sin contar los fijados.
 

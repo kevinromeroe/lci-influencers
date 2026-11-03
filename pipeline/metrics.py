@@ -78,7 +78,7 @@ def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
         "niche": c["niche"], "followers": c["followers"], "avatar": c.get("avatar"),
         "posts": pubs, "t": t,
         "er": t["inter"] / t["views"], "reach": t["views"] / c["followers"],
-        "roi": roi(t["emv"], t["pay"]),
+        "roi": roi(t["emv"], t["pay"]), "roiNote": c.get("roi_note"),
         "reels": [[r["views"], fecha_corta(r.get("posted_on"))] for r in base],
         "lci": lci, "marks": {str(i): r["mark"] for i, r in enumerate(base) if r.get("mark")},
         "med": med, "idx": lci_views / med, "isMin": lci_views == min(r["views"] for r in base),
