@@ -77,7 +77,9 @@ main .in{display:grid;gap:16px}
 .top{background:var(--paper);border-bottom:1px solid var(--line);padding-block:20px}
 .toprow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 28px}
 .title{display:flex;align-items:center;gap:18px;min-width:0}
-.brandlogo{height:58px;width:auto;flex:none;mix-blend-mode:multiply}
+.brandlogo{height:40px;width:auto;flex:none;mix-blend-mode:multiply}
+.by .sep{width:1px;height:32px;background:var(--line)}
+@media (max-width:620px){.by{width:100%;justify-content:space-between}.by .sep{display:none}}
 .kicker{font:600 14px var(--font);color:var(--accent)}
 .rt{font-size:clamp(26px,3.6vw,38px);font-weight:800;font-stretch:78%;line-height:1;letter-spacing:-.005em;margin:0}
 .period{font-size:14px;color:var(--muted)}
@@ -211,10 +213,11 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
 <header class="top gut">
   <div class="in toprow">
     <div class="title">
-      <img class="brandlogo" src="../assets/logo-felipe-agency.png" alt="Felipe Agency">
       <h1 class="rt">Reporte de campaña de influencers</h1>
     </div>
     <div class="by">
+      <img class="brandlogo" src="../assets/logo-felipe-agency.png" alt="Felipe Agency">
+      <span class="sep" aria-hidden="true"></span>
       <a class="pdf" id="pdf" href="pdf/todas.pdf" download>Descargar PDF</a>
     </div>
   </div>
