@@ -24,7 +24,7 @@ from statistics import median
 from typing import Any
 
 MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
-NETWORKS = {"ig": "Instagram", "fb": "Facebook", "tt": "TikTok"}
+NETWORKS = {"ig": "Instagram", "fb": "Facebook", "tt": "TikTok", "yt": "YouTube"}
 
 
 def fecha_corta(iso: str | None) -> str | None:
@@ -64,6 +64,7 @@ def _publication(p: dict[str, Any], v: dict[str, int], per_action: int | None) -
         "format": p["format"], "date": fecha_larga(p["posted_on"]), "url": p["url"],
         "type": p["type"], "pay": pay,
         "views": m["views"], "likes": m.get("likes", 0), "comments": m.get("comments", 0),
+        "shares": m.get("shares", 0), "saves": m.get("saves", 0),
         "inter": inter, "er": inter / m["views"], "emv": value,
         "roi": roi(value, pay), "cpv": ratio(pay, m["views"]), "cpe": ratio(pay, inter),
     }
@@ -86,7 +87,7 @@ def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
     return {
         "id": c["handle"].replace("_", "-").strip("-"), "handle": c["handle"], "name": c["name"],
         "niche": c["niche"], "followers": c["followers"], "avatar": c.get("avatar"),
-        "posts": pubs, "t": t,
+        "posts": pubs, "t": t, "nets": list(dict.fromkeys(p["netName"] for p in pubs)),
         "er": t["inter"] / t["views"], "reach": t["views"] / c["followers"],
         "roi": roi(t["emv"], t["pay"]), "cpv": ratio(t["pay"], t["views"]), "cpe": ratio(t["pay"], t["inter"]),
         "value": c.get("value_cop"), "actions": actions, "perAction": per_action, "done": len(pubs),

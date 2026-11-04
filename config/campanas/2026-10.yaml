@@ -15,7 +15,8 @@ campaign:
   name: Reels pagados de octubre 2026
   corte: "2026-10-16"
   # Inversión total de la campaña y número de salidas (Excel de LCI)
-  budget: {investment_cop: 149317206, actions: 19}
+  # + Siberek (no estaba en el Excel): $3.300.000 por sus 3 salidas
+  budget: {investment_cop: 152617206, actions: 22}
 
 creators:
   - handle: estebango__
@@ -117,3 +118,63 @@ creators:
         - ["Cómo comerte una publicidad en 5 min… buenísimo el chisme", 6]
         - ["Ayyy yo soy UX 💅", 2]
         - ["Soy top ❤️🔥", 1]
+
+  - handle: siberekk
+    network: ig
+    name: Siberek
+    niche: Animación y storytelling
+    followers: 275000
+    avatar: siberekk.jpg
+    value_cop: 3300000          # valor por las 3 salidas (no está en el Excel)
+    actions: 3                  # TikTok + reel de Instagram + short de YouTube, mismo video
+
+    publications:
+      - id: "7695240858781715718"
+        network: tt
+        format: Video
+        posted_on: "2026-10-11"
+        url: https://www.tiktok.com/@siberek/video/7695240858781715718
+        type: Colaboración pagada
+        metrics: {views: 264800, likes: 58600, comments: 305, shares: 849, saves: 3613}
+      - id: DeWnDUyiBte
+        network: ig
+        format: Reel
+        posted_on: "2026-10-11"
+        url: https://www.instagram.com/reel/DeWnDUyiBte/
+        type: Colaboración pagada
+        metrics: {views: 141000, likes: 16463, comments: 125}
+      - id: 5961OWTgV5M
+        network: yt
+        format: Short
+        posted_on: "2026-10-11"
+        url: https://youtube.com/shorts/5961OWTgV5M
+        type: Colaboración pagada
+        metrics: {views: 27289, likes: 3610, comments: 43}
+
+    # Comparación: reels de Instagram (TikTok y YouTube no tienen ventana de comparación aún)
+    baseline:
+      - {views: 220000}
+      - {views: 374000}
+      - {views: 256000}
+      - {views: 232000}
+      - {views: 171000}
+      - {views: 210000}
+      - {views: 229000}
+      - {views: 209000}
+      - {views: 152000}
+      - {views: 121000}
+      - {views: 141000, posted_on: "2026-10-11", lci: true}
+      - {views: 51500}
+
+    cause: "En Instagram quedó por debajo de su mediana, pero el mismo video en TikTok, su red principal (1 millón de seguidores según su perfil), sumó 264.800 reproducciones y 3.613 guardados."
+    talk:
+      read: 115
+      pos: 37
+      neu: 73
+      neg: 5
+      note: "La conversación del reel de Instagram giró en torno a la anécdota: los comentarios más votados (2.423, 1.461 y 818 me gusta) toman partido en la historia. Un comentario celebra el formato («Así sí me gusta la publi en Insta») y otro reconoce la universidad. Las 5 críticas son bromas al creador; ninguna a LCI."
+      line: "37 de 115 comentarios del público en Instagram son positivos y solo 5 son críticos, todos bromas al creador; ninguno contra LCI."
+      top:
+        - ["Que Carolina Pereira sepa que todos estamos de acuerdo con ella 😂😂😂", 2423]
+        - ["La verdadera pregunta es... ¿por qué carajo los dejaron en el piso???", 1461]
+        - ["Namás pisó todo su trabajo, quién sabe porqué lo insultó", 818]
