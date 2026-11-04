@@ -14,6 +14,8 @@ campaign:
   id: "2026-10"
   name: Reels pagados de octubre 2026
   corte: "2026-10-16"
+  # Inversión total de la campaña y número de salidas (Excel de LCI)
+  budget: {investment_cop: 149317206, actions: 19}
 
 creators:
   - handle: estebango__
@@ -22,6 +24,8 @@ creators:
     niche: Interiorismo sostenible
     followers: 511536
     avatar: estebango__.jpg
+    value_cop: 8904056          # valor para LCI del talento (Excel)
+    actions: 1                  # 1 reel
 
     publications:
       - id: DeMoyRYOinH
@@ -30,7 +34,6 @@ creators:
         posted_on: "2026-10-07"
         url: https://www.instagram.com/reel/DeMoyRYOinH/
         type: Colaboración pagada
-        payment_cop: 8904056        # valor para LCI $8.904.056 ÷ 1 acción (1 reel)
         metrics: {views: 71500, likes: 4449, comments: 40}
 
     # Últimos reels del creador, del más antiguo al más reciente.
@@ -73,9 +76,10 @@ creators:
     network: ig
     name: Una Reina del Drama
     niche: Diseño UX
-    roi_note: aún faltan 2 acciones por validar   # se muestra junto al ROI hasta medirlas
     followers: 108923
     avatar: unareinadeldrama.jpg
+    value_cop: 10893260
+    actions: 4                  # 2 reels + 2 TikToks
 
     publications:
       - id: DePf9BMupqx
@@ -84,7 +88,6 @@ creators:
         posted_on: "2026-10-08"         # la ficha decía 9 oct; Instagram confirma el 8
         url: https://www.instagram.com/reel/DePf9BMupqx/
         type: Colaboración pagada
-        payment_cop: 2723315        # valor para LCI $10.893.260 ÷ 4 acciones (2 reels + 2 TikToks)
         metrics: {views: 10400, likes: 292, comments: 6}
 
     baseline:

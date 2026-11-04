@@ -55,6 +55,14 @@ class CuadreOctubre(unittest.TestCase):
         self.assertEqual(self.by["unareinadeldrama"]["t"]["pay"], round(10_893_260 / 4))
         self.assertEqual(self.data["totals"]["pay"], 8_904_056 + 2_723_315)
 
+    def test_salidas_pendientes_y_ejecucion(self):
+        r = self.by["unareinadeldrama"]
+        self.assertEqual((r["done"], r["actions"]), (1, 4))
+        self.assertEqual(r["roiNote"], "aún faltan 3 acciones por validar")
+        self.assertIsNone(self.by["estebango__"]["roiNote"])
+        T = self.data["totals"]
+        self.assertEqual((T["budget"], T["budgetActions"], T["done"]), (149_317_206, 19, 2))
+
     def test_roi_solo_con_pago(self):
         self.assertIsNone(roi(1000, None))
         self.assertEqual(roi(3000, 1000), 2.0)
@@ -98,6 +106,13 @@ class CapturaOctubre(unittest.TestCase):
         self.assertEqual(round(self.by["estebango__"]["roi"] * 100), 291)
         self.assertEqual(round(self.by["unareinadeldrama"]["roi"] * 100), -18)
         self.assertEqual(round(self.data["totals"]["roi"] * 100), 219)
+
+    def test_cpv_cpe(self):
+        e = self.by["estebango__"]
+        self.assertEqual(round(e["cpv"]), round(8_904_056 / 85_900))
+        self.assertEqual(round(e["cpe"]), round(8_904_056 / (4779 + 42)))
+        T = self.data["totals"]
+        self.assertAlmostEqual(T["cpv"], T["pay"] / T["views"])
 
     def test_conversacion_desde_la_captura(self):
         t = self.by["estebango__"]["talk"]

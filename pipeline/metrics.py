@@ -10,7 +10,9 @@ Fórmulas (ver config/cliente.yaml):
   alcance         = reproducciones ÷ seguidores
   EMV             = me gusta × v.like + comentarios × v.comment
                     + compartidos × v.share + guardados × v.save
+  inversión       = payment_cop de la publicación, o valor del talento ÷ sus salidas
   ROI             = (EMV − inversión) ÷ inversión        (solo con pago)
+  CPV / CPE       = inversión ÷ reproducciones / interacciones
   frente a su contenido = reproducciones del reel de LCI ÷ mediana de
                     sus otros reels recientes no fijados
 """
@@ -48,22 +50,30 @@ def roi(emv_value: float, payment: float | None) -> float | None:
     return (emv_value - payment) / payment if payment else None
 
 
-def _publication(p: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
+def ratio(a: float | None, b: float) -> float | None:
+    return a / b if a and b else None
+
+
+def _publication(p: dict[str, Any], v: dict[str, int], per_action: int | None) -> dict[str, Any]:
     m = p["metrics"]
+    pay = p.get("payment_cop") or per_action
     inter = m.get("likes", 0) + m.get("comments", 0)
     value = emv(m, v)
     return {
         "id": p["id"], "net": p["network"], "netName": NETWORKS[p["network"]],
         "format": p["format"], "date": fecha_larga(p["posted_on"]), "url": p["url"],
-        "type": p["type"], "pay": p.get("payment_cop"),
+        "type": p["type"], "pay": pay,
         "views": m["views"], "likes": m.get("likes", 0), "comments": m.get("comments", 0),
         "inter": inter, "er": inter / m["views"], "emv": value,
-        "roi": roi(value, p.get("payment_cop")),
+        "roi": roi(value, pay), "cpv": ratio(pay, m["views"]), "cpe": ratio(pay, inter),
     }
 
 
 def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
-    pubs = [_publication(p, v) for p in c["publications"]]
+    actions = c.get("actions") or len(c["publications"])
+    per_action = round(c["value_cop"] / actions) if c.get("value_cop") else None
+    pubs = [_publication(p, v, per_action) for p in c["publications"]]
+    pending = actions - len(pubs)
     t = {k: sum(p[k] for p in pubs) for k in ("views", "likes", "comments", "inter", "emv")}
     pays = [p["pay"] for p in pubs]
     t["pay"] = sum(pays) if all(pays) else None
@@ -78,7 +88,10 @@ def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
         "niche": c["niche"], "followers": c["followers"], "avatar": c.get("avatar"),
         "posts": pubs, "t": t,
         "er": t["inter"] / t["views"], "reach": t["views"] / c["followers"],
-        "roi": roi(t["emv"], t["pay"]), "roiNote": c.get("roi_note"),
+        "roi": roi(t["emv"], t["pay"]), "cpv": ratio(t["pay"], t["views"]), "cpe": ratio(t["pay"], t["inter"]),
+        "value": c.get("value_cop"), "actions": actions, "perAction": per_action, "done": len(pubs),
+        "roiNote": (f"aún falta{'n' if pending > 1 else ''} {pending} "
+                    f"{'acciones' if pending > 1 else 'acción'} por validar") if pending > 0 else None,
         "reels": [[r["views"], fecha_corta(r.get("posted_on"))] for r in base],
         "lci": lci, "marks": {str(i): r["mark"] for i, r in enumerate(base) if r.get("mark")},
         "med": med, "idx": lci_views / med, "isMin": lci_views == min(r["views"] for r in base),
@@ -144,6 +157,10 @@ def build_data(client: dict[str, Any], campaign: dict[str, Any],
     pays = [p["pay"] for p in posts]
     T["pay"] = sum(pays) if all(pays) else None
     T["roi"] = roi(T["emv"], T["pay"])
+    T["cpv"], T["cpe"] = ratio(T["pay"], T["views"]), ratio(T["pay"], T["inter"])
+    budget = campaign["campaign"].get("budget") or {}
+    T["budget"], T["budgetActions"] = budget.get("investment_cop"), budget.get("actions")
+    T["done"] = len(posts)
     T["fol"] = sum(c["followers"] for c in creators)
 
     nets: dict[str, dict[str, Any]] = {}

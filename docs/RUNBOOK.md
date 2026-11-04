@@ -51,7 +51,9 @@ Buenas prácticas con Instagram: pocas consultas y espaciadas. Si responde "Plea
 
 ## Registrar el pago de un influencer
 
-Poner en `payment_cop` de la publicación el valor para LCI del talento dividido entre su número de acciones (p. ej. $10.893.260 ÷ 4). La tarjeta ROI pasa de "—" al porcentaje.
+En el influencer, `value_cop` (valor para LCI del Excel) y `actions` (número de salidas). La inversión de cada publicación es `value_cop ÷ actions` (o `payment_cop` si se da explícito). Con eso salen ROI, CPV y CPE, y la nota "aún faltan N acciones por validar" se calcula sola con las salidas que falten por medir.
+
+La inversión total y las salidas de toda la campaña van en `campaign.budget` y alimentan la tarjeta "Ejecución de la inversión".
 
 ## Verificación antes de avisar al cliente
 

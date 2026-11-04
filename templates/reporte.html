@@ -77,7 +77,7 @@ main .in{display:grid;gap:16px}
 .top{background:var(--paper);border-bottom:1px solid var(--line);padding-block:20px}
 .toprow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 28px}
 .title{display:flex;align-items:center;gap:18px;min-width:0}
-.brandlogo{width:68px;height:68px;border-radius:50%;flex:none;background:#fff}
+.brandlogo{height:58px;width:auto;flex:none;mix-blend-mode:multiply}
 .kicker{font:600 14px var(--font);color:var(--accent)}
 .rt{font-size:clamp(26px,3.6vw,38px);font-weight:800;font-stretch:78%;line-height:1;letter-spacing:-.005em;margin:0}
 .period{font-size:14px;color:var(--muted)}
@@ -97,9 +97,12 @@ a.pub{text-decoration:none;color:inherit}
 .pub span{font-size:12.5px;color:var(--muted)}
 
 /* Indicadores */
-.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .kpi{padding:14px 16px;display:grid;gap:4px;align-content:start;border-right:1px solid var(--line);min-width:0}
-.kpi:last-child{border-right:0}
+.kpi:nth-child(4n){border-right:0}
+.kpi:nth-child(n+5){border-top:1px solid var(--line)}
+.meter{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:2px}
+.meter i{display:block;height:100%;background:var(--navy)}
 .kpi .l{font-size:12.5px;color:var(--muted)}
 .kpi .v{font:700 26px/1.05 var(--font);font-stretch:85%}
 .kpi .d{font-size:12px;color:var(--muted)}
@@ -181,11 +184,6 @@ td.rk{font-weight:700;color:var(--accent);width:32px}
 
 footer{font-size:12px;color:var(--muted);padding-top:6px}
 
-@media (max-width:980px){
-  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .kpi:nth-child(3n){border-right:0}
-  .kpi:nth-child(n+4){border-top:1px solid var(--line)}
-}
 @media (max-width:760px){
   .concl,.talk{grid-template-columns:1fr}
   .why{grid-template-columns:1fr}
@@ -213,7 +211,7 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
 <header class="top gut">
   <div class="in toprow">
     <div class="title">
-      <img class="brandlogo" src="../assets/logo-lci.jpg" alt="LCI Bogotá">
+      <img class="brandlogo" src="../assets/logo-felipe-agency.png" alt="Felipe Agency">
       <h1 class="rt">Reporte de campaña de influencers</h1>
     </div>
     <div class="by">
@@ -250,6 +248,7 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
   function cop(x){return '$' + nf.format(Math.round(x));}
   function copM(x){return x >= 1e6 ? '$' + n1.format(x/1e6) + ' M' : cop(x);}
   function pct(x){return n1.format(x*100) + ' %';}
+  function costo(x){return x===null ? '—' : cop(x);}
   function roiTxt(r){return (r>0?'+':'') + nf.format(r*100) + ' %';}
   function k(x){return x >= 100000 ? nf.format(Math.round(x/1000)) + 'K' : n1.format(x/1000) + 'K';}
   function initials(n){return n.split(' ').filter(function(w){return w.length>2}).slice(0,2).map(function(w){return w[0]}).join('');}
@@ -287,7 +286,8 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
     document.getElementById('view').innerHTML =
       '<section class="who" aria-label="Influencer">'+
         '<div class="id"><span class="av" aria-hidden="true">'+face(c)+'</span><div><h2>'+c.name+'</h2>'+
-          '<div class="sub"><span>@'+c.handle+'</span><span><b>'+int(c.followers)+'</b> seguidores</span><span class="niche">'+c.niche+'</span></div></div></div>'+
+          '<div class="sub"><span>@'+c.handle+'</span><span><b>'+int(c.followers)+'</b> seguidores</span><span class="niche">'+c.niche+'</span></div>'+
+          (c.value?'<div class="sub"><span>Valor del talento <b>'+cop(c.value)+'</b></span><span><b>'+c.actions+'</b> '+(c.actions===1?'salida':'salidas')+' · <b>'+cop(c.perAction)+'</b> por salida</span><span><b>'+c.done+' de '+c.actions+'</b> '+(c.done===1?'ejecutada':'ejecutadas')+'</span></div>':'')+'</div></div>'+
         c.posts.map(function(p){return '<a class="pub" href="'+p.url+'" target="_blank" rel="noopener">'+net(p)+
           '<span><b>'+p.format+' en '+p.netName+'</b><span>'+p.date+' · '+p.type+'</span></span></a>';}).join('')+
       '</section>'+
@@ -297,6 +297,8 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
         '<div class="kpi"><span class="l">Engagement</span><span class="v num">'+pct(c.er)+'</span><span class="d">'+int(c.t.likes)+' me gusta y '+int(c.t.comments)+' comentarios</span></div>'+
         '<div class="kpi"><span class="l">Frente a su contenido habitual</span><span class="v num '+(c.idx<1?'warn':'good')+'">'+n2.format(c.idx)+'×</span><span class="d">Mediana de sus reels: '+k(c.med)+'</span></div>'+
         '<div class="kpi"><span class="l">Comentarios positivos</span><span class="v num">'+nf.format(tk.pos/tk.read*100)+' %</span><span class="d">'+tk.pos+' de '+tk.read+' leídos</span></div>'+
+        '<div class="kpi"><span class="l">CPV</span><span class="v num">'+costo(c.cpv)+'</span><span class="d">Costo por reproducción</span></div>'+
+        '<div class="kpi"><span class="l">CPE</span><span class="v num">'+costo(c.cpe)+'</span><span class="d">Costo por interacción</span></div>'+
         '<div class="kpi money"><span class="l">EMV</span><span class="v num">'+copM(c.t.emv)+'</span><span class="d">Valor mediático en COP</span></div>'+
         roiTile(c.t.emv, c.t.pay, c.roi, 'Pendiente del valor pagado', c.roiNote)+
       '</section>'+
@@ -333,6 +335,14 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
   // Nota del ROI total cuando a algún influencer le faltan acciones por medir
   var PENDING = (function(){var p=C.filter(function(c){return c.roiNote;}); return p.length ? 'parcial: '+p.map(function(c){return 'a '+c.name+' '+c.roiNote;}).join('; ') : null;})();
 
+  function execTile(){
+    if (!T.budget) return '';
+    var r = (T.pay||0)/T.budget;
+    return '<div class="kpi"><span class="l">Ejecución de la inversión</span><span class="v num">'+pct(r)+'</span>'+
+      '<span class="meter" role="img" aria-label="'+pct(r)+' ejecutado"><i style="width:'+Math.min(100,r*100).toFixed(1)+'%"></i></span>'+
+      '<span class="d">'+copM(T.pay||0)+' de '+copM(T.budget)+' · '+T.done+' de '+T.budgetActions+' salidas</span></div>';
+  }
+
   function renderAll(){
     document.getElementById('view').innerHTML =
       '<section class="who" aria-label="Campaña">'+
@@ -347,7 +357,9 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
         '<div class="kpi"><span class="l">Reproducciones</span><span class="v num">'+int(T.views)+'</span><span class="d">'+pct(T.views/T.fol)+' de los seguidores</span></div>'+
         '<div class="kpi"><span class="l">Interacciones</span><span class="v num">'+int(T.inter)+'</span><span class="d">'+int(T.likes)+' me gusta y '+int(T.comments)+' comentarios</span></div>'+
         '<div class="kpi"><span class="l">Engagement</span><span class="v num">'+pct(T.inter/T.views)+'</span><span class="d">Interacciones ÷ reproducciones</span></div>'+
-        '<div class="kpi"><span class="l">Influencers</span><span class="v num">'+C.length+'</span><span class="d">'+POSTS.length+' publicaciones pagas</span></div>'+
+        '<div class="kpi"><span class="l">CPV</span><span class="v num">'+costo(T.cpv)+'</span><span class="d">Costo por reproducción</span></div>'+
+        '<div class="kpi"><span class="l">CPE</span><span class="v num">'+costo(T.cpe)+'</span><span class="d">Costo por interacción</span></div>'+
+        execTile()+
         roiTile(T.emv, T.pay, T.roi, 'Pendiente del valor pagado', PENDING)+
       '</section>'+
 
@@ -363,20 +375,20 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
       '</section>'+
 
       '<section class="panel" aria-labelledby="h-i"><h2 id="h-i">Influencers por EMV</h2><div class="tw"><table>'+
-        '<thead><tr><th>#</th><th>Influencer</th><th>Nicho</th><th class="r">Seguidores</th><th class="r">Publicaciones</th><th class="r">Engagement</th><th class="r">Frente a su contenido</th><th class="r">EMV</th><th class="r">ROI</th></tr></thead><tbody>'+
+        '<thead><tr><th>#</th><th>Influencer</th><th>Nicho</th><th class="r">Seguidores</th><th class="r">Salidas</th><th class="r">Valor por salida</th><th class="r">Engagement</th><th class="r">Frente a su contenido</th><th class="r">CPV</th><th class="r">EMV</th><th class="r">ROI</th></tr></thead><tbody>'+
         C.map(function(c,i){return '<tr><td class="rk">'+(i+1)+'</td>'+
           '<td><div class="cell"><span class="av">'+face(c)+'</span><span><button type="button" class="go" data-go="'+c.id+'">'+c.name+'</button><small>@'+c.handle+'</small></span></div></td>'+
-          '<td><span class="niche">'+c.niche+'</span></td><td class="r num">'+int(c.followers)+'</td><td class="r num">'+c.posts.length+'</td><td class="r num">'+pct(c.er)+'</td>'+
-          '<td class="r num">'+n2.format(c.idx)+'×</td><td class="r num"><b>'+copM(c.t.emv)+'</b></td>'+
+          '<td><span class="niche">'+c.niche+'</span></td><td class="r num">'+int(c.followers)+'</td><td class="r num">'+c.done+' de '+c.actions+'</td><td class="r num">'+costo(c.perAction)+'</td><td class="r num">'+pct(c.er)+'</td>'+
+          '<td class="r num">'+n2.format(c.idx)+'×</td><td class="r num">'+costo(c.cpv)+'</td><td class="r num"><b>'+copM(c.t.emv)+'</b></td>'+
           '<td class="r num">'+(c.roi!==null?roiTxt(c.roi)+(c.roiNote?'<small style="color:var(--muted);display:block">('+c.roiNote+')</small>':''):'<small style="color:var(--muted)">—</small>')+'</td></tr>';}).join('')+
       '</tbody></table></div></section>'+
 
       '<section class="panel" aria-labelledby="h-pp"><h2 id="h-pp">Publicaciones por EMV</h2><div class="tw"><table>'+
-        '<thead><tr><th>#</th><th>Publicación</th><th>Influencer</th><th>Tipo</th><th class="r">Reproducciones</th><th class="r">Me gusta</th><th class="r">Comentarios</th><th class="r">Engagement</th><th class="r">EMV</th></tr></thead><tbody>'+
+        '<thead><tr><th>#</th><th>Publicación</th><th>Influencer</th><th>Tipo</th><th class="r">Reproducciones</th><th class="r">Me gusta</th><th class="r">Comentarios</th><th class="r">Engagement</th><th class="r">CPV</th><th class="r">CPE</th><th class="r">EMV</th></tr></thead><tbody>'+
         POSTS.map(function(p,i){var c=byId(p.creator); return '<tr><td class="rk">'+(i+1)+'</td>'+
           '<td><div class="cell">'+net(p)+'<span><b>'+p.format+' · <a href="'+p.url+'" target="_blank" rel="noopener">ver</a></b><small>'+p.date+'</small></span></div></td>'+
           '<td><button type="button" class="go" data-go="'+c.id+'">'+c.name+'</button></td><td><small style="color:var(--muted)">'+p.type+'</small></td>'+
-          '<td class="r num">'+int(p.views)+'</td><td class="r num">'+int(p.likes)+'</td><td class="r num">'+int(p.comments)+'</td><td class="r num">'+pct(p.er)+'</td><td class="r num"><b>'+copM(p.emv)+'</b></td></tr>';}).join('')+
+          '<td class="r num">'+int(p.views)+'</td><td class="r num">'+int(p.likes)+'</td><td class="r num">'+int(p.comments)+'</td><td class="r num">'+pct(p.er)+'</td><td class="r num">'+costo(p.cpv)+'</td><td class="r num">'+costo(p.cpe)+'</td><td class="r num"><b>'+copM(p.emv)+'</b></td></tr>';}).join('')+
       '</tbody></table></div><p class="hint">EMV = me gusta × '+cop(V.like)+' + comentarios × '+cop(V.comment)+', valores de referencia de LCI.</p></section>'+
       '<footer>© 2026 Datalítica Colombia S.A.S.</footer>';
   }
