@@ -313,7 +313,7 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
 
       '<section class="panel" aria-labelledby="h-c"><h2 id="h-c">Conclusiones</h2><ul class="concl">'+
         '<li><span>'+(c.posts.length>1
-          ? 'Sus '+c.posts.length+' salidas sumaron <b>'+int(c.t.views)+' reproducciones</b> ('+c.posts.map(function(p){return p.netName+' '+int(p.views);}).join(', ')+'), con un engagement de '+pct(c.er)+'.'
+          ? (c.done>1?'Sus '+c.done+' salidas sumaron':'Su salida sumó')+' <b>'+int(c.t.views)+' reproducciones</b> ('+c.posts.map(function(p){return p.netName+' '+int(p.views);}).join(', ')+'), con un engagement de '+pct(c.er)+'.'
           : 'El reel sumó <b>'+int(c.t.views)+' reproducciones</b>, el '+pct(c.reach)+' de sus seguidores, con un engagement de '+pct(c.er)+'.')+'</span></li>'+
         '<li><span>'+(c.nets.length>1?'Su reel de Instagram rindió':'Rindió')+' <b>'+n2.format(c.idx)+'× frente a su contenido habitual</b>'+(c.isMin?': fue el de menos reproducciones entre sus últimos '+c.reels.length+' reels':'')+'. '+c.cause+'</span></li>'+
         '<li><span>La conversación fue <b>favorable</b>: '+c.talkLine+'</span></li>'+

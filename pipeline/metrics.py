@@ -73,8 +73,18 @@ def _publication(p: dict[str, Any], v: dict[str, int], per_action: int | None) -
 def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
     actions = c.get("actions") or len(c["publications"])
     per_action = round(c["value_cop"] / actions) if c.get("value_cop") else None
-    pubs = [_publication(p, v, per_action) for p in c["publications"]]
-    pending = actions - len(pubs)
+    # Publicaciones con la misma clave `salida` cuentan como una sola salida y se reparten su valor.
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for p in c["publications"]:
+        groups.setdefault(str(p.get("salida") or p["id"]), []).append(p)
+    share: dict[str, int | None] = {}
+    for g in groups.values():
+        q, r = divmod(per_action, len(g)) if per_action else (None, 0)
+        for i, p in enumerate(g):
+            share[p["id"]] = q + (1 if i < r else 0) if q is not None else None
+    pubs = [_publication(p, v, share[p["id"]]) for p in c["publications"]]
+    done = len(groups)
+    pending = actions - done
     t = {k: sum(p[k] for p in pubs) for k in ("views", "likes", "comments", "inter", "emv")}
     pays = [p["pay"] for p in pubs]
     t["pay"] = sum(pays) if all(pays) else None
@@ -90,7 +100,7 @@ def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
         "posts": pubs, "t": t, "nets": list(dict.fromkeys(p["netName"] for p in pubs)),
         "er": t["inter"] / t["views"], "reach": t["views"] / c["followers"],
         "roi": roi(t["emv"], t["pay"]), "cpv": ratio(t["pay"], t["views"]), "cpe": ratio(t["pay"], t["inter"]),
-        "value": c.get("value_cop"), "actions": actions, "perAction": per_action, "done": len(pubs),
+        "value": c.get("value_cop"), "actions": actions, "perAction": per_action, "done": done,
         "roiNote": (f"aún falta{'n' if pending > 1 else ''} {pending} "
                     f"{'acciones' if pending > 1 else 'acción'} por validar") if pending > 0 else None,
         "reels": [[r["views"], fecha_corta(r.get("posted_on"))] for r in base],
@@ -161,7 +171,7 @@ def build_data(client: dict[str, Any], campaign: dict[str, Any],
     T["cpv"], T["cpe"] = ratio(T["pay"], T["views"]), ratio(T["pay"], T["inter"])
     budget = campaign["campaign"].get("budget") or {}
     T["budget"], T["budgetActions"] = budget.get("investment_cop"), budget.get("actions")
-    T["done"] = len(posts)
+    T["done"] = sum(c["done"] for c in creators)
     T["fol"] = sum(c["followers"] for c in creators)
 
     nets: dict[str, dict[str, Any]] = {}

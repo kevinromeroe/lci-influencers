@@ -80,7 +80,7 @@ creators:
     followers: 108923
     avatar: unareinadeldrama.jpg
     value_cop: 10893260
-    actions: 4                  # 2 reels + 2 TikToks
+    actions: 4                  # 4 salidas pactadas; reel + TikTok de UX cuentan como 1
 
     publications:
       - id: DePf9BMupqx
@@ -89,7 +89,16 @@ creators:
         posted_on: "2026-10-08"         # la ficha decía 9 oct; Instagram confirma el 8
         url: https://www.instagram.com/reel/DePf9BMupqx/
         type: Colaboración pagada
+        salida: ux                      # reel + TikTok = una sola salida (el TikTok fue bonificado)
         metrics: {views: 10400, likes: 292, comments: 6}
+      - id: "7698887105354747143"
+        network: tt
+        format: Video
+        posted_on: "2026-10-20"
+        url: https://www.tiktok.com/@unareinadeldrama/video/7698887105354747143
+        type: Colaboración pagada
+        salida: ux
+        metrics: {views: 531, likes: 26, comments: 5, shares: 5, saves: 3}
 
     baseline:
       - {views: 28100}

@@ -36,8 +36,8 @@ class CuadreOctubre(unittest.TestCase):
 
     def test_una_reina_del_drama(self):
         c = self.by["unareinadeldrama"]
-        self.assertEqual(c["t"]["emv"], 2_165_400)
-        self.assertAlmostEqual(c["er"], 0.0287, places=4)
+        self.assertEqual(c["t"]["emv"], 2_165_400 + 342_130)  # reel + TikTok
+        self.assertAlmostEqual(c["er"], (292 + 6 + 26 + 5) / (10_400 + 531), places=4)
         self.assertEqual(c["med"], 23550)
         self.assertEqual(round(c["idx"], 2), 0.44)
         self.assertTrue(c["isMin"])
@@ -45,9 +45,9 @@ class CuadreOctubre(unittest.TestCase):
     def test_totales_igual_suma_de_partes(self):
         T = self.data["totals"]
         self.assertEqual(T["emv"], sum(c["t"]["emv"] for c in self.data["creators"]))
-        self.assertEqual(T["emv"], 34_618_200 + 630_889_530)
-        self.assertEqual(T["views"], 81_900 + 264_800 + 141_000 + 27_289)
-        self.assertEqual(T["inter"], 4_787 + 58_905 + 16_588 + 3_653)
+        self.assertEqual(T["emv"], 34_618_200 + 342_130 + 630_889_530)
+        self.assertEqual(T["views"], 81_900 + 531 + 264_800 + 141_000 + 27_289)
+        self.assertEqual(T["inter"], 4_787 + 31 + 58_905 + 16_588 + 3_653)
         self.assertEqual(sum(n["emv"] for n in self.data["networks"]), T["emv"])
 
     def test_ranking_por_emv(self):
@@ -69,6 +69,14 @@ class CuadreOctubre(unittest.TestCase):
         self.assertIsNone(self.by["estebango__"]["roiNote"])
         T = self.data["totals"]
         self.assertEqual((T["budget"], T["budgetActions"], T["done"]), (152_617_206, 22, 5))
+
+    def test_salida_agrupada(self):
+        # Reel + TikTok de Reina cuentan como 1 salida y se reparten su valor
+        r = self.by["unareinadeldrama"]
+        self.assertEqual(len(r["posts"]), 2)
+        self.assertEqual(r["done"], 1)
+        self.assertEqual(r["t"]["pay"], round(10_893_260 / 4))
+        self.assertEqual(r["roiNote"], "aún faltan 3 acciones por validar")
 
     def test_roi_solo_con_pago(self):
         self.assertIsNone(roi(1000, None))
@@ -109,18 +117,18 @@ class CapturaOctubre(unittest.TestCase):
 
     def test_una_reina_del_drama(self):
         c = self.by["unareinadeldrama"]
-        self.assertEqual(c["t"]["emv"], 302 * 7200 + 6 * 10500)
+        self.assertEqual(c["t"]["emv"], 302 * 7200 + 6 * 10500 + 26 * 7200 + 5 * 10500 + 5 * 12350 + 3 * 13560)
         self.assertEqual(c["med"], 20_500)
         self.assertEqual(round(c["idx"], 2), 0.53)
         self.assertEqual(c["posts"][0]["date"], "8 oct 2026")
 
     def test_total(self):
-        self.assertEqual(self.data["totals"]["emv"], 37_087_200 + 630_889_530)
+        self.assertEqual(self.data["totals"]["emv"], 37_087_200 + 342_130 + 630_889_530)
 
     def test_roi(self):
         self.assertEqual(round(self.by["estebango__"]["roi"] * 100), 291)
-        self.assertEqual(round(self.by["unareinadeldrama"]["roi"] * 100), -18)
-        self.assertEqual(round(self.data["totals"]["roi"] * 100), 4375)
+        self.assertEqual(round(self.by["unareinadeldrama"]["roi"] * 100), -5)
+        self.assertEqual(round(self.data["totals"]["roi"] * 100), 4377)
 
     def test_cpv_cpe(self):
         e = self.by["estebango__"]
