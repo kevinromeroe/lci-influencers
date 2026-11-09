@@ -127,6 +127,52 @@ creators:
         - ["Ayyy yo soy UX 💅", 2]
         - ["Soy top ❤️🔥", 1]
 
+  - handle: zambo.design
+    network: ig
+    name: Juliana Jurado
+    niche: Diseño de interiores y arquitectura
+    followers: 224000           # perfil de Instagram (9 nov 2026)
+    avatar: zambo.design.jpg
+    value_cop: 28466353         # valor para LCI del talento (Excel)
+    actions: 3                  # 1 reel + ráfaga de historias + short de YouTube
+
+    # Ráfaga de 3 historias (26 oct): una sola salida. Las historias vencen a las 24 h,
+    # así que las métricas vienen de los Insights que compartió el talento (capturas del 9 nov).
+    # Historia 1: la captura solo trae el total de interacciones (117); se valoran como me gusta,
+    # el valor más bajo del benchmark, para no inflar el EMV.
+    publications:
+      - id: "4016529777741672404"
+        network: ig
+        format: Historia
+        posted_on: "2026-10-26"
+        url: https://www.instagram.com/stories/zambo.design/4016529777741672404/
+        type: Colaboración pagada
+        source: insights
+        salida: rafaga
+        metrics: {views: 6024, likes: 117, comments: 0}
+      - id: "4016532609526030225"
+        network: ig
+        format: Historia
+        posted_on: "2026-10-26"
+        url: https://www.instagram.com/stories/zambo.design/4016532609526030225/
+        type: Colaboración pagada
+        source: insights
+        salida: rafaga
+        metrics: {views: 5252, likes: 55, comments: 8, shares: 1, link_clicks: 340}
+      - id: "4016533382762747432"
+        network: ig
+        format: Historia
+        posted_on: "2026-10-26"
+        url: https://www.instagram.com/stories/zambo.design/4016533382762747432/
+        type: Colaboración pagada
+        source: insights
+        salida: rafaga
+        metrics: {views: 4416, likes: 35, comments: 2, shares: 0, link_clicks: 91}
+
+    notes:
+      - "Las historias llevaron al menos <b>431 clics al enlace</b> de LCI (340 y 91 en las historias 2 y 3; la captura de la historia 1 no trae ese dato) y casi todas las visualizaciones fueron de sus seguidores (97 % a 99 %)."
+      - "De la historia 1 solo tenemos el total de interacciones (117); las valoramos como me gusta, el valor más bajo, para no inflar el EMV."
+
   - handle: siberekk
     network: ig
     name: Siberek

@@ -45,13 +45,13 @@ class CuadreOctubre(unittest.TestCase):
     def test_totales_igual_suma_de_partes(self):
         T = self.data["totals"]
         self.assertEqual(T["emv"], sum(c["t"]["emv"] for c in self.data["creators"] if c["summary"]))
-        self.assertEqual(T["emv"], 34_618_200 + 342_130)
-        self.assertEqual(T["views"], 81_900 + 531)
-        self.assertEqual(T["inter"], 4_787 + 31)
+        self.assertEqual(T["emv"], 34_618_200 + 342_130 + 842_400 + 492_350 + 273_000)
+        self.assertEqual(T["views"], 81_900 + 531 + 6_024 + 5_252 + 4_416)
+        self.assertEqual(T["inter"], 4_787 + 31 + 117 + 63 + 37)
         self.assertEqual(sum(n["emv"] for n in self.data["networks"]), T["emv"])
 
     def test_ranking_por_emv(self):
-        self.assertEqual([c["handle"] for c in self.data["creators"]], ["estebango__", "unareinadeldrama", "siberekk"])  # Siberek al final: fuera del resumen
+        self.assertEqual([c["handle"] for c in self.data["creators"]], ["estebango__", "unareinadeldrama", "zambo.design", "siberekk"])  # Siberek al final: fuera del resumen
         self.assertNotIn("siberekk", {p["creator"] for p in self.data["posts"]})
         emvs = [p["emv"] for p in self.data["posts"]]
         self.assertEqual(emvs, sorted(emvs, reverse=True))
@@ -60,7 +60,7 @@ class CuadreOctubre(unittest.TestCase):
         # Valor para LCI ÷ número de acciones del talento
         self.assertEqual(self.by["estebango__"]["t"]["pay"], 8_904_056)
         self.assertEqual(self.by["unareinadeldrama"]["t"]["pay"], round(10_893_260 / 4))
-        self.assertEqual(self.data["totals"]["pay"], 8_904_056 + 2_723_315)  # Siberek no suma
+        self.assertEqual(self.data["totals"]["pay"], 8_904_056 + 2_723_315 + round(28_466_353 / 3))  # Siberek no suma
         self.assertEqual(self.by["siberekk"]["perAction"], 1_100_000)
 
     def test_salidas_pendientes_y_ejecucion(self):
@@ -69,7 +69,7 @@ class CuadreOctubre(unittest.TestCase):
         self.assertEqual(r["roiNote"], "aún faltan 3 acciones por validar")
         self.assertIsNone(self.by["estebango__"]["roiNote"])
         T = self.data["totals"]
-        self.assertEqual((T["budget"], T["budgetActions"], T["done"]), (149_317_206, 19, 2))
+        self.assertEqual((T["budget"], T["budgetActions"], T["done"]), (149_317_206, 19, 3))
 
     def test_salida_agrupada(self):
         # Reel + TikTok de Reina cuentan como 1 salida y se reparten su valor
@@ -78,6 +78,17 @@ class CuadreOctubre(unittest.TestCase):
         self.assertEqual(r["done"], 1)
         self.assertEqual(r["t"]["pay"], round(10_893_260 / 4))
         self.assertEqual(r["roiNote"], "aún faltan 3 acciones por validar")
+
+    def test_historias_de_juliana(self):
+        # Ráfaga de 3 historias = 1 salida; datos de Insights; sin comparación ni conversación
+        j = self.by["zambo.design"]
+        self.assertEqual((j["done"], j["actions"]), (1, 3))
+        self.assertEqual(j["t"]["emv"], 842_400 + 492_350 + 273_000)
+        self.assertEqual(j["t"]["pay"], round(28_466_353 / 3))
+        self.assertEqual(j["t"]["clicks"], 431)
+        self.assertIsNone(j["idx"]); self.assertIsNone(j["talk"])
+        self.assertEqual(round(j["roi"] * 100), -83)
+        self.assertEqual(j["id"], "zambo-design")
 
     def test_roi_solo_con_pago(self):
         self.assertIsNone(roi(1000, None))
@@ -104,6 +115,8 @@ class CapturaOctubre(unittest.TestCase):
 
     def test_ventana_ultimos_12_hasta_el_corte(self):
         for c in self.data["creators"]:
+            if c["idx"] is None:  # solo historias: sin reel de LCI que comparar
+                continue
             self.assertEqual(len(c["reels"]), 12)
             self.assertEqual(sum(1 for i in range(12) if i == c["lci"]), 1)
 
@@ -124,12 +137,12 @@ class CapturaOctubre(unittest.TestCase):
         self.assertEqual(c["posts"][0]["date"], "8 oct 2026")
 
     def test_total(self):
-        self.assertEqual(self.data["totals"]["emv"], 34_849_800 + 2_579_530)
+        self.assertEqual(self.data["totals"]["emv"], 34_849_800 + 2_579_530 + 842_400 + 492_350 + 273_000)
 
     def test_roi(self):
         self.assertEqual(round(self.by["estebango__"]["roi"] * 100), 291)
         self.assertEqual(round(self.by["unareinadeldrama"]["roi"] * 100), -5)
-        self.assertEqual(round(self.data["totals"]["roi"] * 100), 222)
+        self.assertEqual(round(self.data["totals"]["roi"] * 100), 85)
 
     def test_cpv_cpe(self):
         e = self.by["estebango__"]

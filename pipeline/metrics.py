@@ -19,6 +19,7 @@ Fórmulas (ver config/cliente.yaml):
 from __future__ import annotations
 
 import copy
+import re
 from datetime import date
 from statistics import median
 from typing import Any
@@ -62,9 +63,9 @@ def _publication(p: dict[str, Any], v: dict[str, int], per_action: int | None) -
     return {
         "id": p["id"], "net": p["network"], "netName": NETWORKS[p["network"]],
         "format": p["format"], "date": fecha_larga(p["posted_on"]), "url": p["url"],
-        "type": p["type"], "pay": pay,
+        "type": p["type"], "pay": pay, "source": p.get("source"),
         "views": m["views"], "likes": m.get("likes", 0), "comments": m.get("comments", 0),
-        "shares": m.get("shares", 0), "saves": m.get("saves", 0),
+        "shares": m.get("shares", 0), "saves": m.get("saves", 0), "clicks": m.get("link_clicks", 0),
         "inter": inter, "er": inter / m["views"], "emv": value,
         "roi": roi(value, pay), "cpv": ratio(pay, m["views"]), "cpe": ratio(pay, inter),
     }
@@ -85,17 +86,21 @@ def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
     pubs = [_publication(p, v, share[p["id"]]) for p in c["publications"]]
     done = len(groups)
     pending = actions - done
-    t = {k: sum(p[k] for p in pubs) for k in ("views", "likes", "comments", "inter", "emv")}
+    t = {k: sum(p[k] for p in pubs) for k in ("views", "likes", "comments", "inter", "emv", "clicks")}
     pays = [p["pay"] for p in pubs]
     t["pay"] = sum(pays) if all(pays) else None
 
-    base = c["baseline"]
-    lci = next(i for i, r in enumerate(base) if r.get("lci"))
-    others = [r["views"] for i, r in enumerate(base) if i != lci and not r.get("pinned")]
-    med = median(others)
-    lci_views = base[lci]["views"]
+    # Comparación con sus reels: solo si hay un reel de LCI en su ventana (las historias no tienen historial público)
+    base = c.get("baseline") or []
+    lci = next((i for i, r in enumerate(base) if r.get("lci")), None)
+    med = idx = None
+    if lci is not None:
+        others = [r["views"] for i, r in enumerate(base) if i != lci and not r.get("pinned")]
+        med = median(others)
+        idx = base[lci]["views"] / med
+    talk = c.get("talk")
     return {
-        "id": c["handle"].replace("_", "-").strip("-"), "handle": c["handle"], "name": c["name"],
+        "id": re.sub(r"[^a-z0-9]+", "-", c["handle"].lower()).strip("-"), "handle": c["handle"], "name": c["name"],
         "summary": c.get("summary", True),
         "niche": c["niche"], "followers": c["followers"], "avatar": c.get("avatar"),
         "posts": pubs, "t": t, "nets": list(dict.fromkeys(p["netName"] for p in pubs)),
@@ -106,10 +111,11 @@ def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
                     f"{'acciones' if pending > 1 else 'acción'} por validar") if pending > 0 else None,
         "reels": [[r["views"], fecha_corta(r.get("posted_on"))] for r in base],
         "lci": lci, "marks": {str(i): r["mark"] for i, r in enumerate(base) if r.get("mark")},
-        "med": med, "idx": lci_views / med, "isMin": lci_views == min(r["views"] for r in base),
-        "why": c.get("why", []), "cause": c.get("cause", ""),
-        "talk": {k: c["talk"][k] for k in ("read", "pos", "neu", "neg", "note")},
-        "talkLine": c["talk"]["line"], "top": c["talk"]["top"],
+        "med": med, "idx": idx,
+        "isMin": lci is not None and base[lci]["views"] == min(r["views"] for r in base),
+        "why": c.get("why", []), "cause": c.get("cause", ""), "notes": c.get("notes", []),
+        "talk": {k: talk[k] for k in ("read", "pos", "neu", "neg", "note")} if talk else None,
+        "talkLine": talk["line"] if talk else None, "top": talk["top"] if talk else [],
     }
 
 
