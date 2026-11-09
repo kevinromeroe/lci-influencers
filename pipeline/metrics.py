@@ -96,6 +96,7 @@ def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
     lci_views = base[lci]["views"]
     return {
         "id": c["handle"].replace("_", "-").strip("-"), "handle": c["handle"], "name": c["name"],
+        "summary": c.get("summary", True),
         "niche": c["niche"], "followers": c["followers"], "avatar": c.get("avatar"),
         "posts": pubs, "t": t, "nets": list(dict.fromkeys(p["netName"] for p in pubs)),
         "er": t["inter"] / t["views"], "reach": t["views"] / c["followers"],
@@ -161,7 +162,9 @@ def build_data(client: dict[str, Any], campaign: dict[str, Any],
         campaign = apply_capture(campaign, capture, client["analytics"]["baseline_reels"])
     creators = [_creator(c, v) for c in campaign["creators"]]
 
-    posts = [dict(p, creator=c["id"]) for c in creators for p in c["posts"]]
+    # Solo los influencers del presupuesto de la campaña suman al resumen; los demás quedan en su pestaña.
+    inside = [c for c in creators if c["summary"]]
+    posts = [dict(p, creator=c["id"]) for c in inside for p in c["posts"]]
     posts.sort(key=lambda p: p["emv"], reverse=True)
 
     T = {k: sum(p[k] for p in posts) for k in ("views", "likes", "comments", "inter", "emv")}
@@ -171,8 +174,8 @@ def build_data(client: dict[str, Any], campaign: dict[str, Any],
     T["cpv"], T["cpe"] = ratio(T["pay"], T["views"]), ratio(T["pay"], T["inter"])
     budget = campaign["campaign"].get("budget") or {}
     T["budget"], T["budgetActions"] = budget.get("investment_cop"), budget.get("actions")
-    T["done"] = sum(c["done"] for c in creators)
-    T["fol"] = sum(c["followers"] for c in creators)
+    T["done"] = sum(c["done"] for c in inside)
+    T["fol"] = sum(c["followers"] for c in inside)
 
     nets: dict[str, dict[str, Any]] = {}
     for p in posts:
@@ -189,7 +192,7 @@ def build_data(client: dict[str, Any], campaign: dict[str, Any],
         "campaign": {"id": campaign["campaign"]["id"], "name": campaign["campaign"]["name"],
                      "captured_on": capture["captured_on"] if capture else None},
         "values": v,
-        "creators": sorted(creators, key=lambda c: c["t"]["emv"], reverse=True),
+        "creators": sorted(creators, key=lambda c: (not c["summary"], -c["t"]["emv"])),
         "posts": posts,
         "totals": T,
         "networks": list(nets.values()),

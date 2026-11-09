@@ -15,8 +15,7 @@ campaign:
   name: Reels pagados de octubre 2026
   corte: "2026-10-16"
   # Inversión total de la campaña y número de salidas (Excel de LCI)
-  # + Siberek (no estaba en el Excel): $3.300.000 por sus 3 salidas
-  budget: {investment_cop: 152617206, actions: 22}
+  budget: {investment_cop: 149317206, actions: 19}   # Excel del cliente (8 talentos)
 
 creators:
   - handle: estebango__
@@ -134,6 +133,7 @@ creators:
     niche: Animación y storytelling
     followers: 275000
     avatar: siberekk.jpg
+    summary: false              # la paga LCI directamente: tiene pestaña, pero no suma al resumen
     value_cop: 3300000          # valor por las 3 salidas (no está en el Excel)
     actions: 3                  # TikTok + reel de Instagram + short de YouTube, mismo video
 

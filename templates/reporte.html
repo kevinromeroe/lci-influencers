@@ -106,6 +106,13 @@ a.pub{text-decoration:none;color:inherit}
 .kpi:nth-child(4n){border-right:0}
 .kpi:nth-child(n+5){border-top:1px solid var(--line)}
 .meter{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:2px}
+.kpi.wide{grid-column:span 2}
+.exec{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:18px 22px;margin-bottom:14px}
+.exec .l{display:block;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.exec .v{display:block;font-size:30px;font-weight:700;color:var(--navy);line-height:1.15}
+.exec .bar{display:grid;gap:8px}
+.exec .meter{height:10px;border-radius:5px}
+.exec .d{font-size:14px;color:var(--ink)}
 .meter i{display:block;height:100%;background:var(--navy)}
 .kpi .l{font-size:12.5px;color:var(--muted)}
 .kpi .v{font:700 26px/1.05 var(--font);font-stretch:85%}
@@ -194,6 +201,7 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
 }
 @media (max-width:520px){
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .exec{grid-template-columns:1fr;gap:10px;padding:16px}
   .kpi{border-right:1px solid var(--line)!important;border-top:0!important}
   .kpi:nth-child(2n){border-right:0!important}
   .kpi:nth-child(n+3){border-top:1px solid var(--line)!important}
@@ -239,7 +247,7 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
   // DATA la genera scripts/build_reporte.py con pipeline/metrics.py: aquí solo se formatea.
   var DATA = /*__DATA__*/null;
   var ASSETS = '../assets/';
-  var V = DATA.values, C = DATA.creators, POSTS = DATA.posts, T = DATA.totals, NETS = DATA.networks;
+  var V = DATA.values, C = DATA.creators, CS = C.filter(function(c){return c.summary;}), POSTS = DATA.posts, T = DATA.totals, NETS = DATA.networks;
   var ICON = {
     ig:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#fff" stroke="none"/></svg>',
     tt:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M16.6 3c.3 2.2 1.6 3.6 3.9 3.8v2.6c-1.4.1-2.6-.3-3.9-1.1v5.3c0 6.5-7.1 8.5-10 3.8-1.9-3-.7-8.3 5.4-8.5v2.8c-.5.1-1 .2-1.4.4-1.4.5-2.2 1.4-2 3 .4 3 6 3.9 5.5-2V3z"/></svg>',
@@ -343,25 +351,29 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
   }
 
   // Nota del ROI total cuando a algún influencer le faltan acciones por medir
-  var PENDING = (function(){var p=C.filter(function(c){return c.roiNote;}); return p.length ? 'parcial: '+p.map(function(c){return 'a '+c.name+' '+c.roiNote;}).join('; ') : null;})();
+  var PENDING = (function(){var p=CS.filter(function(c){return c.roiNote;}); return p.length ? 'parcial: '+p.map(function(c){return 'a '+c.name+' '+c.roiNote;}).join('; ') : null;})();
 
-  function execTile(){
+  // Franja de ejecución: valor de las salidas publicadas frente al presupuesto de la campaña
+  function execStrip(){
     if (!T.budget) return '';
     var r = (T.pay||0)/T.budget;
-    return '<div class="kpi"><span class="l">Ejecución de la inversión</span><span class="v num">'+pct(r)+'</span>'+
-      '<span class="meter" role="img" aria-label="'+pct(r)+' ejecutado"><i style="width:'+Math.min(100,r*100).toFixed(1)+'%"></i></span>'+
-      '<span class="d">'+copM(T.pay||0)+' de '+copM(T.budget)+' · '+T.done+' de '+T.budgetActions+' salidas</span></div>';
+    return '<section class="exec" aria-label="Ejecución del presupuesto">'+
+      '<div><span class="l">Ejecución del presupuesto</span><span class="v num">'+pct(r)+'</span></div>'+
+      '<div class="bar"><span class="meter" role="img" aria-label="'+pct(r)+' ejecutado"><i style="width:'+Math.min(100,r*100).toFixed(1)+'%"></i></span>'+
+      '<span class="d"><b>'+copM(T.pay||0)+'</b> ejecutados de <b>'+copM(T.budget)+'</b> · <b>'+T.done+' de '+T.budgetActions+'</b> salidas publicadas</span></div>'+
+    '</section>';
   }
 
   function renderAll(){
     document.getElementById('view').innerHTML =
       '<section class="who" aria-label="Campaña">'+
         '<div class="id"><span class="av all" aria-hidden="true">'+LOGO+'</span><div><h2>Todas las publicaciones</h2>'+
-          '<div class="sub"><span><b>'+C.length+'</b> influencers</span><span><b>'+POSTS.length+'</b> publicaciones pagas</span><span><b>'+int(T.fol)+'</b> seguidores combinados</span></div></div></div>'+
+          '<div class="sub"><span><b>'+CS.length+'</b> '+(CS.length===1?'influencer':'influencers')+'</span><span><b>'+POSTS.length+'</b> publicaciones pagas</span><span><b>'+int(T.fol)+'</b> seguidores combinados</span></div></div></div>'+
         '<div class="pub">'+NETS.map(function(n){return net(n);}).join('')+
           '<span><b>Redes activas</b><span>'+NETS.map(function(n){return n.name;}).join(', ')+'</span></span></div>'+
       '</section>'+
 
+      execStrip()+
       '<section class="kpis" aria-label="Indicadores de la campaña">'+
         '<div class="kpi money"><span class="l">EMV total</span><span class="v num">'+copM(T.emv)+'</span><span class="d">Valor mediático en COP</span></div>'+
         '<div class="kpi"><span class="l">Reproducciones</span><span class="v num">'+int(T.views)+'</span><span class="d">'+(NETS.length>1?'En '+lista(NETS.map(function(n){return n.name;})):pct(T.views/T.fol)+' de los seguidores')+'</span></div>'+
@@ -369,8 +381,7 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
         '<div class="kpi"><span class="l">Engagement</span><span class="v num">'+pct(T.inter/T.views)+'</span><span class="d">Interacciones ÷ reproducciones</span></div>'+
         '<div class="kpi"><span class="l">CPV</span><span class="v num">'+costo(T.cpv)+'</span><span class="d">Costo por reproducción</span></div>'+
         '<div class="kpi"><span class="l">CPE</span><span class="v num">'+costo(T.cpe)+'</span><span class="d">Costo por interacción</span></div>'+
-        execTile()+
-        roiTile(T.emv, T.pay, T.roi, 'Pendiente del valor pagado', PENDING)+
+        roiTile(T.emv, T.pay, T.roi, 'Pendiente del valor pagado', PENDING).replace('class="kpi','class="kpi wide')+
       '</section>'+
 
       '<section class="panel" aria-labelledby="h-n"><h2 id="h-n">Resultados por red</h2>'+
@@ -386,7 +397,7 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
 
       '<section class="panel" aria-labelledby="h-i"><h2 id="h-i">Influencers por EMV</h2><div class="tw"><table>'+
         '<thead><tr><th>#</th><th>Influencer</th><th>Nicho</th><th class="r">Seguidores</th><th class="r">Salidas</th><th class="r">Valor por salida</th><th class="r">Engagement</th><th class="r">Frente a su contenido</th><th class="r">CPV</th><th class="r">EMV</th><th class="r">ROI</th></tr></thead><tbody>'+
-        C.map(function(c,i){return '<tr><td class="rk">'+(i+1)+'</td>'+
+        CS.map(function(c,i){return '<tr><td class="rk">'+(i+1)+'</td>'+
           '<td><div class="cell"><span class="av">'+face(c)+'</span><span><button type="button" class="go" data-go="'+c.id+'">'+c.name+'</button><small>@'+c.handle+'</small></span></div></td>'+
           '<td><span class="niche">'+c.niche+'</span></td><td class="r num">'+int(c.followers)+'</td><td class="r num">'+c.done+' de '+c.actions+'</td><td class="r num">'+costo(c.perAction)+'</td><td class="r num">'+pct(c.er)+'</td>'+
           '<td class="r num">'+n2.format(c.idx)+'×</td><td class="r num">'+costo(c.cpv)+'</td><td class="r num"><b>'+copM(c.t.emv)+'</b></td>'+
