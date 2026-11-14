@@ -31,23 +31,65 @@ Sitio: `https://influencermarketing.datalitica.com.co`
 4. Correr las pruebas y el build en local; revisar el sitio.
 5. Commit + Push. El workflow genera los PDF y publica.
 
-## Actualizar las interacciones (captura con Claude en Chrome)
+## Actualizar las interacciones (dos veces por semana)
 
-Los pedidos no son frecuentes, así que la actualización se hace leyendo Instagram con Claude en Chrome, sin Apify.
+### Reglas (validadas por Kevin, 13 nov 2026)
 
-1. Iniciar sesión en Instagram en Chrome (lo hace la persona, nunca Claude).
-2. Pedir a Claude: "actualiza las publicaciones de la campaña <id>". Claude lee:
-   - de cada publicación de LCI: me gusta y comentarios exactos, y la fecha;
-   - de la pestaña de reels de cada influencer: seguidores exactos, reproducciones (como las muestra Instagram, p. ej. 85.9K), fecha (sale del código de la publicación) y si está fijado;
-   - todos los comentarios visibles de cada publicación de LCI, incluidas las respuestas, clasificados como positivo, neutro o crítico (sin contar los de la marca ni los del creador). El balance y el top 3 del reporte salen de ahí;
-   - de los reels destacados (A, B, C): comentarios, me gusta del comentario más votado y coautores, para actualizar los textos `why`.
-3. Claude guarda `datos/capturas/<id>/<AAAA-MM-DD>.json`. La carpeta `datos/` es local y no se versiona.
-4. `python scripts/build_reporte.py` usa la captura más reciente; si no hay, usa los valores de la configuración.
-5. Revisar los textos curados que llevan cifras (`why`, `cause`): se actualizan a mano si cambiaron.
+- Las campañas **no se congelan**: se actualizan aunque el cliente las haya aprobado.
+- Una cifra de una publicación **solo se actualiza si sube**; si la lectura es menor se conserva la anterior.
+- Instagram muestra los me gusta **redondeados** desde ~1.000 (`4.9K`). La cifra redondeada se usa solo si es **mayor** que la exacta anterior y el reporte la muestra con **«≈»** (`aprox` en la captura).
+- Los **compartidos** de Instagram se leen en pantalla y suman al EMV.
+- Los **seguidores** reflejan la cuenta hoy (pueden bajar).
+- **Nada se borra**; una publicación nueva se agrega primero en `config/campanas/<id>.yaml`.
+- Textos curados (`why`, `cause`, `talk`) se mantienen; los nuevos los escribe Claude.
+- Todo esto vive en `scripts/actualizar_cifras.py` y lo prueba `tests/test_actualizar.py`. Las pruebas de cuadre (`tests/test_metrics.py`) siguen leyendo la ficha aprobada `datos/capturas/2026-10/2026-11-04.json`.
 
-Ventana de comparación: los últimos 12 reels no fijados publicados hasta la fecha de corte de la campaña (`campaign.corte`). Las marcas A, B, C se asignan por código de publicación en `marks`.
+### Fuentes
 
-Buenas prácticas con Instagram: pocas consultas y espaciadas. Si responde "Please wait a few minutes" (HTTP 429), esperar y leer la página en vez de consultar la API.
+| Red | Qué | Cómo |
+|---|---|---|
+| Instagram | me gusta, comentarios, compartidos | Pantalla con sesión: Claude en Chrome del OptiPlex, perfil `Default` (kevinromeroe). |
+| Instagram | reproducciones exactas | Apify: `~/.claude/skills/levantamiento-redes/scripts/vistas_apify.py`. |
+| TikTok | todo | `__UNIVERSAL_DATA_FOR_REHYDRATION__` → `statsV2` en la página del video. |
+| YouTube | vistas, me gusta | Página del video en Chrome. |
+| Seguidores | exactos | En el perfil, `main span[title]`. |
+
+La API interna de Instagram (`/api/v1/media/…`) **ya no se usa**: está bloqueada desde Chrome.
+
+### Pasos (en el OptiPlex, `~/repos/lci-influencers`, rama `actualizacion/<fecha>`)
+
+1. **Leer las redes con Claude en Chrome** (comprobar que instagram.com tiene la sesión iniciada en el perfil de Datalítica).
+   - Ritmo prudente: 5 a 10 s entre publicaciones, máximo ~40 páginas de Instagram por sesión y no más de 10 perfiles ajenos seguidos. Si aparece verificación, `/challenge` o "actividad inusual": parar, no hacer clic y avisar a Kevin.
+   - Instagram, en `https://www.instagram.com/p/<código>/`, barra de acciones:
+
+     ```js
+     const s=document.querySelector('main section'); const w=document.createTreeWalker(s,5); const o=[]; let n;
+     while(n=w.nextNode()){ if(n.nodeType==1&&n.tagName.toLowerCase()=='svg'&&n.getAttribute('aria-label')) o.push('['+n.getAttribute('aria-label')+']');
+       else if(n.nodeType==3&&n.textContent.trim()&&!n.parentElement.closest('svg')) o.push(n.textContent.trim()); }
+     o.join(' ')   // «[Like] 4.9K [Comment] 42 [Share] 363 [Save]»
+     ```
+   - TikTok (esperar ~6 s; la URL redirige):
+
+     ```js
+     JSON.parse(document.getElementById('__UNIVERSAL_DATA_FOR_REHYDRATION__').textContent)
+       .__DEFAULT_SCOPE__['webapp.video-detail'].itemInfo.itemStruct.statsV2
+     ```
+2. **Vistas de Instagram**: `python3 ~/.claude/skills/levantamiento-redes/scripts/vistas_apify.py lci-influencers <códigos>` (respeta el tope mensual de Apify y registra el gasto).
+3. **Guardar las lecturas** en `~/datos/crudos/lci-influencers/lecturas-<AAAA-MM-DD>.json`, con las cifras tal como se ven (`"4.9K"`). Formato en la cabecera de `scripts/actualizar_cifras.py`.
+4. **Crear la captura**:
+   ```
+   .venv/bin/python scripts/actualizar_cifras.py 2026-10 ~/datos/crudos/lci-influencers/lecturas-<fecha>.json --prueba
+   .venv/bin/python scripts/actualizar_cifras.py 2026-10 ~/datos/crudos/lci-influencers/lecturas-<fecha>.json
+   .venv/bin/python scripts/build_reporte.py
+   .venv/bin/python -m unittest discover tests
+   ```
+5. **Comentarios y textos**: si hay comentarios nuevos, se leen en pantalla y se clasifican (positivo, neutro, crítico, sin contar marca ni creador); revisar los textos que llevan cifras (`why`, `cause`).
+6. **Mostrar la vista previa a Kevin** (servidor local) con lo que cambió frente a lo publicado. Él revisa el resultado, no la rama. Nada se publica sin su aprobación.
+7. Commit, fusionar a `main` y push. El workflow "Pruebas + PDF" regenera los PDF. Verificar el sitio.
+
+Historial: 13 nov 2026, primera actualización con este proceso (`lecturas-2026-11-13.json`; EMV 39,0 M → 44,5 M por los compartidos de Instagram).
+
+Buenas prácticas con Instagram: pocas consultas y espaciadas; leer la página, no la API.
 
 ## Registrar el pago de un influencer
 
