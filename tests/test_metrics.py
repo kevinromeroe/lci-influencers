@@ -101,7 +101,12 @@ class CapturaOctubre(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cap = latest_capture("2026-10")
+        # Las cifras de esta prueba son las de la ficha aprobada (captura del 04-nov-2026).
+        # Las capturas posteriores (actualizaciones automáticas) no cambian lo que se verifica aquí.
+        import json as _json
+        from pipeline.util.config import CAPTURES_DIR as _CD
+        _f = _CD / "2026-10" / "2026-11-04.json"
+        cap = _json.loads(_f.read_text(encoding="utf-8")) if _f.exists() else latest_capture("2026-10")
         cls.data = build_data(load_client(), load_campaign("2026-10"), cap)
         cls.by = {c["handle"]: c for c in cls.data["creators"]}
 

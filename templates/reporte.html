@@ -243,6 +243,8 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
 </main>
 
 <script>
+function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
+
 (function(){
   // DATA la genera scripts/build_reporte.py con pipeline/metrics.py: aquí solo se formatea.
   var DATA = /*__DATA__*/null;
@@ -302,7 +304,7 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
   function kpisDe(c, tk){
     var t = [
       '<div class="kpi"><span class="l">Reproducciones</span><span class="v num">'+int(c.t.views)+'</span><span class="d">'+(c.nets.length>1?'En '+lista(c.nets):pct(c.reach)+' de sus seguidores')+'</span></div>',
-      '<div class="kpi"><span class="l">Engagement</span><span class="v num">'+pct(c.er)+'</span><span class="d">'+int(c.t.likes)+' me gusta y '+int(c.t.comments)+' '+(c.posts.every(function(p){return p.format==='Historia';})?'respuestas':'comentarios')+'</span></div>'
+      '<div class="kpi"><span class="l">Engagement</span><span class="v num">'+pct(c.er)+'</span><span class="d">'+ax(c.t,'likes')+int(c.t.likes)+' me gusta y '+int(c.t.comments)+' '+(c.posts.every(function(p){return p.format==='Historia';})?'respuestas':'comentarios')+'</span></div>'
     ];
     if (c.idx !== null) t.push('<div class="kpi"><span class="l">Frente a su contenido habitual</span><span class="v num '+(c.idx<1?'warn':'good')+'">'+n2.format(c.idx)+'×</span><span class="d">Mediana de sus reels: '+k(c.med)+'</span></div>');
     if (tk) t.push('<div class="kpi"><span class="l">Comentarios positivos</span><span class="v num">'+nf.format(tk.pos/tk.read*100)+' %</span><span class="d">'+tk.pos+' de '+tk.read+' leídos</span></div>');
@@ -388,7 +390,7 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
       '<section class="kpis" aria-label="Indicadores de la campaña">'+
         '<div class="kpi money"><span class="l">EMV total</span><span class="v num">'+copM(T.emv)+'</span><span class="d">Valor mediático en COP</span></div>'+
         '<div class="kpi"><span class="l">Reproducciones</span><span class="v num">'+int(T.views)+'</span><span class="d">'+(NETS.length>1?'En '+lista(NETS.map(function(n){return n.name;})):pct(T.views/T.fol)+' de los seguidores')+'</span></div>'+
-        '<div class="kpi"><span class="l">Interacciones</span><span class="v num">'+int(T.inter)+'</span><span class="d">'+int(T.likes)+' me gusta y '+int(T.comments)+' comentarios</span></div>'+
+        '<div class="kpi"><span class="l">Interacciones</span><span class="v num">'+int(T.inter)+'</span><span class="d">'+ax(T,'likes')+int(T.likes)+' me gusta y '+int(T.comments)+' comentarios</span></div>'+
         '<div class="kpi"><span class="l">Engagement</span><span class="v num">'+pct(T.inter/T.views)+'</span><span class="d">Interacciones ÷ reproducciones</span></div>'+
         '<div class="kpi"><span class="l">CPV</span><span class="v num">'+costo(T.cpv)+'</span><span class="d">Costo por reproducción</span></div>'+
         '<div class="kpi"><span class="l">CPE</span><span class="v num">'+costo(T.cpe)+'</span><span class="d">Costo por interacción</span></div>'+
@@ -420,7 +422,7 @@ footer{font-size:12px;color:var(--muted);padding-top:6px}
         POSTS.map(function(p,i){var c=byId(p.creator); return '<tr><td class="rk">'+(i+1)+'</td>'+
           '<td><div class="cell">'+net(p)+'<span><b>'+p.format+' · <a href="'+p.url+'" target="_blank" rel="noopener">ver</a></b><small>'+p.date+'</small></span></div></td>'+
           '<td><button type="button" class="go" data-go="'+c.id+'">'+c.name+'</button></td><td><small style="color:var(--muted)">'+p.type+'</small></td>'+
-          '<td class="r num">'+int(p.views)+'</td><td class="r num">'+int(p.likes)+'</td><td class="r num">'+int(p.comments)+'</td><td class="r num">'+pct(p.er)+'</td><td class="r num">'+costo(p.cpv)+'</td><td class="r num">'+costo(p.cpe)+'</td><td class="r num"><b>'+copM(p.emv)+'</b></td></tr>';}).join('')+
+          '<td class="r num">'+int(p.views)+'</td><td class="r num">'+ax(p,'likes')+int(p.likes)+'</td><td class="r num">'+int(p.comments)+'</td><td class="r num">'+pct(p.er)+'</td><td class="r num">'+costo(p.cpv)+'</td><td class="r num">'+costo(p.cpe)+'</td><td class="r num"><b>'+copM(p.emv)+'</b></td></tr>';}).join('')+
       '</tbody></table></div><p class="hint">EMV = me gusta × '+cop(V.like)+' + comentarios × '+cop(V.comment)+' + compartidos × '+cop(V.share)+' + guardados × '+cop(V.save)+', valores de referencia de LCI. Compartidos y guardados se leen en TikTok; en historias, los datos vienen de los Insights del talento.</p></section>'+
       '<footer>© 2026 Datalítica Colombia S.A.S.</footer>';
   }

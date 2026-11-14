@@ -66,7 +66,7 @@ def _publication(p: dict[str, Any], v: dict[str, int], per_action: int | None) -
         "type": p["type"], "pay": pay, "source": p.get("source"),
         "views": m["views"], "likes": m.get("likes", 0), "comments": m.get("comments", 0),
         "shares": m.get("shares", 0), "saves": m.get("saves", 0), "clicks": m.get("link_clicks", 0),
-        "inter": inter, "er": inter / m["views"], "emv": value,
+        "inter": inter, "er": inter / m["views"], "emv": value, "aprox": p.get("aprox", []),
         "roi": roi(value, pay), "cpv": ratio(pay, m["views"]), "cpe": ratio(pay, inter),
     }
 
@@ -87,6 +87,7 @@ def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
     done = len(groups)
     pending = actions - done
     t = {k: sum(p[k] for p in pubs) for k in ("views", "likes", "comments", "inter", "emv", "clicks")}
+    t["aprox"] = sorted({a for p in pubs for a in p.get("aprox", [])})
     pays = [p["pay"] for p in pubs]
     t["pay"] = sum(pays) if all(pays) else None
 
@@ -147,6 +148,7 @@ def apply_capture(campaign: dict[str, Any], capture: dict[str, Any], baseline_n:
             if m:
                 p["posted_on"] = m["posted_on"]
                 p["metrics"] = {k: m[k] for k in ("views", "likes", "comments", "shares", "saves") if k in m}
+                p["aprox"] = list(m.get("aprox", []))
         _apply_comments(c, capture.get("comments", {}))
         if not cap:
             continue
@@ -174,6 +176,7 @@ def build_data(client: dict[str, Any], campaign: dict[str, Any],
     posts.sort(key=lambda p: p["emv"], reverse=True)
 
     T = {k: sum(p[k] for p in posts) for k in ("views", "likes", "comments", "inter", "emv")}
+    T["aprox"] = sorted({a for p in posts for a in p.get("aprox", [])})
     pays = [p["pay"] for p in posts]
     T["pay"] = sum(pays) if all(pays) else None
     T["roi"] = roi(T["emv"], T["pay"])
