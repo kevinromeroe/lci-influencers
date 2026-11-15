@@ -71,3 +71,6 @@
 Thumbs.db
 *.log
 *.tmp
+
+# Contador de visitas (GoatCounter)
+!/gc.js

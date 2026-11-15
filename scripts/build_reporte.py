@@ -48,7 +48,7 @@ def write_root_redirect(latest: str) -> None:
         '<!doctype html><html lang="es"><head><meta charset="utf-8">'
         f'<meta http-equiv="refresh" content="0; url=/{latest}/">'
         '<meta name="robots" content="noindex"><title>Reporte de campaña de influencers</title></head>'
-        f'<body><a href="/{latest}/">Ir al reporte más reciente</a></body></html>',
+        f'<body><a href="/{latest}/">Ir al reporte más reciente</a><script async src="/gc.js"></script></body></html>',
         encoding="utf-8",
     )
 
