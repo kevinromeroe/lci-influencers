@@ -102,3 +102,15 @@ La inversión total y las salidas de toda la campaña van en `campaign.budget` y
 - `python -m unittest discover tests` en verde.
 - Cada pestaña abre, las fotos cargan y los PDF bajan.
 - Ninguna tarjeta en cero y ningún mensaje técnico visible.
+
+## Corrida automática (desde el 14 de noviembre de 2026)
+
+Corre sola en el OptiPlex **lunes y jueves a las 7:00** (`~/ops/influencers/corrida.sh`, crontab). Decisión de Kevin: sin vista previa; **se publica sola si pasa el control automático** y, si no, no se publica y avisa en el resumen de WhatsApp.
+
+1. `lista.py` arma la lista de publicaciones del reporte.
+2. **Instagram va completo por Apify** (vistas, me gusta, comentarios y seguidores, `apify_ig.py`): la sesión de Instagram en Chrome pidió verificación. Apify no da compartidos: esa cifra se conserva. **TikTok y YouTube** los lee Claude en Chrome (sin sesión, nunca abre Instagram).
+3. `validar_corrida.py`: se frena si se leyó menos del 80 % de las publicaciones o aparece una que no está en el reporte; una cifra que sube más de 30 % y más de 1.000 de golpe no se aplica (se conserva la anterior) y se informa.
+4. `scripts/actualizar_cifras.py` aplica las reglas de este documento, pruebas, build/PDF, push y verificación en línea.
+5. Si fallan las pruebas o el build, el trabajo queda en una rama `fallida/<fecha>-<repo>` y no se publica.
+
+Esta sección reemplaza los pasos manuales de lectura por Chrome para Instagram; el resto de las reglas sigue igual.
