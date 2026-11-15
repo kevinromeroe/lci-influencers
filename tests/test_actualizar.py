@@ -44,6 +44,10 @@ class Reglas(unittest.TestCase):
         self.assertEqual(cap["publications"]["A"]["likes"], 4950)
         self.assertNotIn("aprox", cap["publications"]["A"])
 
+    def test_seguidores_de_creador_sin_perfil_no_se_agregan(self):
+        cap, _ = aplicar(self.base, {"seguidores": {"y": 1000}})
+        self.assertNotIn("y", cap["creators"])
+
     def test_seguidores_reflejan_hoy(self):
         cap, _ = aplicar(self.base, {"seguidores": {"x": 510234}})
         self.assertEqual(cap["creators"]["x"]["followers"], 510234)

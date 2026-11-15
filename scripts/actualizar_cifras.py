@@ -113,7 +113,10 @@ def aplicar(captura: dict, lecturas: dict, config: dict | None = None) -> tuple[
         c = cifra(f)
         if c is None:
             continue
-        antes = creadores.setdefault(h, {}).get("followers")
+        if h not in creadores:  # creador sin perfil en la captura (p. ej. solo historias): no se crea nada nuevo
+            cambios.append(f"@{h} seguidores: no está en la captura, no se agrega")
+            continue
+        antes = creadores[h].get("followers")
         if antes != c[0]:
             cambios.append(f"@{h} seguidores: {antes} → {c[0]}")
         creadores[h]["followers"] = c[0]
