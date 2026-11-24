@@ -186,7 +186,25 @@ creators:
     # Con `entregas`, el valor y las salidas se toman de cada video (value_cop/actions de arriba quedan de referencia).
     entregas:
       - {id: v1, nombre: "Video 1", fecha: "2026-10-11", value_cop: 3300000, actions: 3}
-      - {id: v2, nombre: "Video 2", fecha: "2026-11-15", value_cop: null, actions: 4}   # valor pendiente (Kevin); 4 salidas, una por red: por confirmar
+      - id: v2
+        nombre: "Video 2"
+        fecha: "2026-11-15"
+        value_cop: null           # valor pendiente (Kevin, 24-nov-2026)
+        actions: 4                # una salida por red (Kevin, 24-nov-2026)
+        # Sus últimos 12 reels hasta el 24-nov (sin el reel del video 1): fechas del lector sin sesión, vistas de Apify
+        baseline:
+          - {views: 217135, posted_on: "2026-09-20"}
+          - {views: 234680, posted_on: "2026-09-27"}
+          - {views: 213990, posted_on: "2026-10-04"}
+          - {views: 158529, posted_on: "2026-10-08"}
+          - {views: 127524, posted_on: "2026-10-09"}
+          - {views: 56572, posted_on: "2026-10-16"}
+          - {views: 110073, posted_on: "2026-10-18"}
+          - {views: 99176, posted_on: "2026-10-30"}
+          - {views: 119886, posted_on: "2026-11-01"}
+          - {views: 88484, posted_on: "2026-11-08"}
+          - {views: 235876, posted_on: "2026-11-15", lci: true}
+          - {views: 117229, posted_on: "2026-11-22"}
 
     publications:
       - id: "7695240858781715718"
@@ -228,7 +246,7 @@ creators:
         posted_on: "2026-11-15"   # 15-nov 7:02 a. m. (lector de Instagram sin sesión, 24-nov-2026)
         url: https://www.instagram.com/p/Dfwu4YMEUCS/
         type: Colaboración pagada
-        metrics: {views: 234817, likes: 27401, comments: 337}   # me gusta y comentarios: sin sesión; vistas: Apify (Instagram no las da sin sesión)
+        metrics: {views: 235876, likes: 27401, comments: 337}   # me gusta y comentarios: sin sesión; vistas: Apify (Instagram no las da sin sesión)
       - id: XXe8S74BesU
         entrega: v2
         network: yt

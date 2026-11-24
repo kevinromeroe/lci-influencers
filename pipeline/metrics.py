@@ -103,6 +103,20 @@ def _shares(pubs_cfg: list[dict[str, Any]], per_action: int | None) -> tuple[dic
     return share, len(groups)
 
 
+def _barra_lci_al_dia(base: list[dict[str, Any]], k: int, pubs_cfg: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """La barra del reel de LCI usa las mismas reproducciones de la publicación en el reporte (Kevin, 24-nov-2026).
+    La ventana de reels se lee con cifras redondeadas («141K»); la publicación tiene la cifra exacta y al día.
+    Solo sube: si la publicación tuviera menos, se deja la barra como estaba."""
+    fecha = str(base[k].get("posted_on") or "")
+    reel = next((p for p in pubs_cfg if p["network"] == "ig" and p.get("format") == "Reel"
+                 and str(p.get("posted_on")) == fecha and (p.get("metrics") or {}).get("views")), None)
+    if not reel:
+        return base
+    b = [dict(r) for r in base]
+    b[k]["views"] = max(b[k]["views"], reel["metrics"]["views"])
+    return b
+
+
 def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
     entregas = c.get("entregas")
     if entregas:   # varios videos (pedidos), cada uno con su valor y sus salidas (Siberek, 24-nov-2026)
@@ -137,9 +151,22 @@ def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
     lci = next((i for i, r in enumerate(base) if r.get("lci")), None)
     med = idx = None
     if lci is not None:
+        base = _barra_lci_al_dia(base, lci, c["publications"])
         others = [r["views"] for i, r in enumerate(base) if i != lci and not r.get("pinned")]
         med = median(others)
         idx = base[lci]["views"] / med
+    # Una gráfica más por cada video con su propia ventana de reels (Siberek, video 2; Kevin, 24-nov-2026)
+    extra = []
+    for e in entregas or []:
+        b = e.get("baseline") or []
+        k = next((i for i, r in enumerate(b) if r.get("lci")), None)
+        if k is None:
+            continue
+        b = _barra_lci_al_dia(b, k, [p for p in c["publications"] if p.get("entrega") == e["id"]])
+        m = median([r["views"] for i, r in enumerate(b) if i != k and not r.get("pinned")])
+        extra.append({"name": e["nombre"], "reels": [[r["views"], fecha_corta(r.get("posted_on"))] for r in b],
+                      "lci": k, "marks": {}, "med": m, "idx": b[k]["views"] / m,
+                      "isMin": b[k]["views"] == min(r["views"] for r in b)})
     talk = c.get("talk")
     return {
         "id": re.sub(r"[^a-z0-9]+", "-", c["handle"].lower()).strip("-"), "handle": c["handle"], "name": c["name"],
@@ -159,7 +186,7 @@ def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
         "videos": _videos(c, pubs),
         "reels": [[r["views"], fecha_corta(r.get("posted_on"))] for r in base],
         "lci": lci, "marks": {str(i): r["mark"] for i, r in enumerate(base) if r.get("mark")},
-        "med": med, "idx": idx,
+        "med": med, "idx": idx, "charts": extra,
         "isMin": lci is not None and base[lci]["views"] == min(r["views"] for r in base),
         "why": c.get("why", []), "cause": c.get("cause", ""), "notes": c.get("notes", []),
         "talk": {k: talk[k] for k in ("read", "pos", "neu", "neg", "note")} if talk else None,
