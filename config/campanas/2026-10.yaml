@@ -241,10 +241,10 @@ creators:
         entrega: v2
         network: fb
         format: Reel
-        posted_on: "2026-11-15"   # Facebook no muestra la fecha sin sesión: por confirmar
+        posted_on: "2026-11-15"   # 15-nov 7:00 a. m. (Apify, facebook-reels-scraper)
         url: https://www.facebook.com/reel/1611880540956598
         type: Colaboración pagada
-        metrics: {views: null, likes: 19200, comments: 348, shares: 242}   # «19,2 mil» me gusta; sin reproducciones públicas
+        metrics: {views: 256821, likes: 19200, comments: 348, shares: 242}   # vistas: Apify; «19,2 mil» me gusta, comentarios y compartidos: Chrome
         aprox: [likes]
 
     # Comparación: reels de Instagram (TikTok y YouTube no tienen ventana de comparación aún)

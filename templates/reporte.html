@@ -377,7 +377,7 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
         return '<tr><td><div class="cell">'+net(p)+'<span><b>'+p.format+' en '+p.netName+' · <a href="'+p.url+'" target="_blank" rel="noopener">ver</a></b><small>'+p.date+'</small></span></div></td><td>'+(v?v.name:'')+'</td>'+
         '<td class="r num">'+vw(p.views)+'</td><td class="r num">'+ax(p,'likes')+int(p.likes)+'</td><td class="r num">'+int(p.comments)+'</td><td class="r num">'+(p.shares?int(p.shares):'—')+'</td><td class="r num">'+(p.saves?int(p.saves):'—')+'</td>'+
         '<td class="r num">'+pctv(p.er)+'</td><td class="r num">'+(p.pay?cop(p.pay):'<small style="color:var(--muted)">Pendiente</small>')+'</td><td class="r num">'+costo(p.cpv)+'</td><td class="r num"><b>'+copM(p.emv)+'</b></td></tr>';}).join('')+
-      '</tbody></table></div><p class="hint">Compartidos y guardados: TikTok los muestra todos; Instagram, YouTube y Facebook no muestran guardados públicos. Facebook no muestra reproducciones sin iniciar sesión.</p></section>';
+      '</tbody></table></div><p class="hint">Compartidos y guardados: TikTok los muestra todos; Instagram, YouTube y Facebook no muestran guardados públicos.</p></section>';
   }
 
   // Vista "Todas las publicaciones": responde lo mismo que el PPT de Runway (total, por red, cuentas y contenidos por EMV)
