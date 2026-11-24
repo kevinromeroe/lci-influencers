@@ -267,6 +267,8 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
   function pct(x){return n1.format(x*100) + ' %';}
   function lista(a){return a.length>1 ? a.slice(0,-1).join(', ')+' y '+a[a.length-1] : a[0];}
   function costo(x){return x===null ? '—' : cop(x);}
+  function vw(x){return x===null||x===undefined ? '—' : int(x);}   // Facebook sin reproducciones públicas
+  function pctv(x){return x===null||x===undefined ? '—' : pct(x);}
   function roiTxt(r){return (r>0?'+':'') + nf.format(r*100) + ' %';}
   function k(x){return x >= 100000 ? nf.format(Math.round(x/1000)) + 'K' : n1.format(x/1000) + 'K';}
   function initials(n){return n.split(' ').filter(function(w){return w.length>2}).slice(0,2).map(function(w){return w[0]}).join('');}
@@ -312,7 +314,7 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
     t.push('<div class="kpi"><span class="l">CPV</span><span class="v num">'+costo(c.cpv)+'</span><span class="d">Costo por reproducción</span></div>');
     t.push('<div class="kpi"><span class="l">CPE</span><span class="v num">'+costo(c.cpe)+'</span><span class="d">Costo por interacción</span></div>');
     t.push('<div class="kpi money"><span class="l">EMV</span><span class="v num">'+copM(c.t.emv)+'</span><span class="d">Valor mediático en COP</span></div>');
-    t.push(roiTile(c.t.emv, c.t.pay, c.roi, 'Pendiente del valor pagado', c.roiNote));
+    t.push(roiTile(c.t.emv, c.payShown, c.roi, 'Pendiente del valor pagado', c.roiNote));
     if (t.length % 2) t[t.length-1] = t[t.length-1].replace('class="kpi', 'class="kpi wide');
     return t.join('');
   }
@@ -330,16 +332,19 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
       '</section>'+
 
       '<section class="kpis" aria-label="Indicadores">'+kpisDe(c, tk)+'</section>'+
+      (c.videos.length>1 ? videosHtml(c) : '')+
 
       '<section class="panel" aria-labelledby="h-c"><h2 id="h-c">Conclusiones</h2><ul class="concl">'+
-        '<li><span>'+(c.posts.length>1
+        '<li><span>'+(c.videos.length>1
+          ? 'Sus '+c.videos.length+' videos sumaron <b>'+int(c.t.views)+' reproducciones</b> en '+lista(c.nets)+' ('+c.videos.map(function(v){return v.name.toLowerCase()+': '+int(v.views);}).join('; ')+'), con un engagement de '+pct(c.er)+'.'+(c.videos.some(function(v){return v.noViews.length;})?' Facebook no muestra reproducciones públicas: sus me gusta y comentarios sí suman al EMV.':'')
+          : c.posts.length>1
           ? (c.done>1?'Sus '+c.done+' salidas sumaron':'Su salida sumó')+' <b>'+int(c.t.views)+' reproducciones</b> ('+c.posts.map(function(p,i){return etiqueta(p,i)+' '+int(p.views);}).join(', ')+'), con un engagement de '+pct(c.er)+'.'
           : 'El reel sumó <b>'+int(c.t.views)+' reproducciones</b>, el '+pct(c.reach)+' de sus seguidores, con un engagement de '+pct(c.er)+'.')+'</span></li>'+
-        (c.idx!==null?'<li><span>'+(c.nets.length>1?'Su reel de Instagram rindió':'Rindió')+' <b>'+n2.format(c.idx)+'× frente a su contenido habitual</b>'+(c.isMin?': fue el de menos reproducciones entre sus últimos '+c.reels.length+' reels':'')+'. '+c.cause+'</span></li>':'')+
+        (c.idx!==null?'<li><span>'+(c.videos.length>1?'Su reel de Instagram del '+c.videos[0].name.toLowerCase()+' rindió':c.nets.length>1?'Su reel de Instagram rindió':'Rindió')+' <b>'+n2.format(c.idx)+'× frente a su contenido habitual</b>'+(c.isMin?': fue el de menos reproducciones entre sus últimos '+c.reels.length+' reels':'')+'. '+c.cause+'</span></li>':'')+
         (tk?'<li><span>La conversación fue <b>favorable</b>: '+c.talkLine+'</span></li>':'')+
         c.notes.map(function(x){return '<li><span>'+x+'</span></li>';}).join('')+
         '<li><span>Generó un <b>EMV de '+cop(c.t.emv)+'</b> (me gusta × '+cop(V.like)+' + comentarios × '+cop(V.comment)+(c.posts.some(function(p){return p.shares||p.saves;})?' + compartidos × '+cop(V.share)+' y guardados × '+cop(V.save):'')+'). '+
-          (c.roi!==null ? 'Con un pago de '+cop(c.t.pay)+', el ROI fue de '+roiTxt(c.roi)+(c.roiNote?' ('+c.roiNote+' para tener su ROI completo; estamos a la espera de esa información)':'')+'.' : 'El ROI se calcula cuando LCI confirme el valor pagado.')+'</span></li>'+
+          (c.roi!==null ? 'Con un pago de '+cop(c.payShown)+', el ROI fue de '+roiTxt(c.roi)+(c.roiNote?' ('+c.roiNote+' para tener su ROI completo; estamos a la espera de esa información)':'')+'.' : 'El ROI se calcula cuando LCI confirme el valor pagado.')+'</span></li>'+
       '</ul></section>'+
 
       (c.idx===null?'':'<section class="panel" aria-labelledby="h-g"><h2 id="h-g">Reel de LCI frente a sus últimos '+c.reels.length+' reels</h2>'+
@@ -356,6 +361,23 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
         '<div><p class="hint" style="margin-bottom:8px">Comentarios con más me gusta</p><ul class="quotes">'+c.top.map(function(q,i){return '<li><span class="rk">'+(i+1)+'</span>“'+q[0]+'”<span><b>'+q[1]+'</b> me gusta</span></li>';}).join('')+'</ul></div>'+
       '</div></section>')+
       '<footer>© 2026 Datalítica Colombia S.A.S.</footer>';
+  }
+
+  // Influencer con varios videos (pedidos): resumen por video y detalle por pieza (Kevin, 24-nov-2026)
+  function videosHtml(c){
+    return '<section class="panel" aria-labelledby="h-v"><h2 id="h-v">Resumen por video</h2><div class="tw"><table>'+
+      '<thead><tr><th>Video</th><th>Publicado</th><th>Redes</th><th class="r">Reproducciones</th><th class="r">Interacciones</th><th class="r">Engagement</th><th class="r">EMV</th><th class="r">Inversión</th><th class="r">CPV</th><th class="r">ROI</th></tr></thead><tbody>'+
+      c.videos.map(function(v){return '<tr><td><b>'+v.name+'</b><small style="color:var(--muted);display:block">'+v.pieces+(v.pieces===1?' pieza':' piezas')+'</small></td><td>'+v.date+'</td><td>'+lista(v.nets)+'</td>'+
+        '<td class="r num">'+int(v.views)+'</td><td class="r num">'+int(v.inter)+'</td><td class="r num">'+pctv(v.er)+'</td><td class="r num"><b>'+copM(v.emv)+'</b></td>'+
+        '<td class="r num">'+(v.pay?copM(v.pay):'<small style="color:var(--muted)">Pendiente</small>')+'</td><td class="r num">'+costo(v.cpv)+'</td><td class="r num">'+(v.roi!==null?roiTxt(v.roi):'<small style="color:var(--muted)">—</small>')+'</td></tr>';}).join('')+
+      '</tbody></table></div></section>'+
+      '<section class="panel" aria-labelledby="h-dp"><h2 id="h-dp">Detalle por pieza</h2><div class="tw"><table>'+
+      '<thead><tr><th>Pieza</th><th>Video</th><th class="r">Reproducciones</th><th class="r">Me gusta</th><th class="r">Comentarios</th><th class="r">Compartidos</th><th class="r">Guardados</th><th class="r">Engagement</th><th class="r">Inversión</th><th class="r">CPV</th><th class="r">EMV</th></tr></thead><tbody>'+
+      c.posts.slice().sort(function(a,b){return b.emv-a.emv;}).map(function(p){var v=c.videos.filter(function(x){return x.id===p.entrega;})[0];
+        return '<tr><td><div class="cell">'+net(p)+'<span><b>'+p.format+' en '+p.netName+' · <a href="'+p.url+'" target="_blank" rel="noopener">ver</a></b><small>'+p.date+'</small></span></div></td><td>'+(v?v.name:'')+'</td>'+
+        '<td class="r num">'+vw(p.views)+'</td><td class="r num">'+ax(p,'likes')+int(p.likes)+'</td><td class="r num">'+int(p.comments)+'</td><td class="r num">'+(p.shares?int(p.shares):'—')+'</td><td class="r num">'+(p.saves?int(p.saves):'—')+'</td>'+
+        '<td class="r num">'+pctv(p.er)+'</td><td class="r num">'+(p.pay?cop(p.pay):'<small style="color:var(--muted)">Pendiente</small>')+'</td><td class="r num">'+costo(p.cpv)+'</td><td class="r num"><b>'+copM(p.emv)+'</b></td></tr>';}).join('')+
+      '</tbody></table></div><p class="hint">Compartidos y guardados: TikTok los muestra todos; Instagram, YouTube y Facebook no muestran guardados públicos. Facebook no muestra reproducciones sin iniciar sesión.</p></section>';
   }
 
   // Vista "Todas las publicaciones": responde lo mismo que el PPT de Runway (total, por red, cuentas y contenidos por EMV)

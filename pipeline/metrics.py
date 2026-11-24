@@ -60,36 +60,77 @@ def _publication(p: dict[str, Any], v: dict[str, int], per_action: int | None) -
     pay = p.get("payment_cop") or per_action
     inter = m.get("likes", 0) + m.get("comments", 0)
     value = emv(m, v)
+    views = m.get("views")   # Facebook no muestra reproducciones sin sesión: None = «—» (24-nov-2026)
     return {
         "id": p["id"], "net": p["network"], "netName": NETWORKS[p["network"]],
         "format": p["format"], "date": fecha_larga(p["posted_on"]), "url": p["url"],
         "type": p["type"], "pay": pay, "source": p.get("source"),
-        "views": m["views"], "likes": m.get("likes", 0), "comments": m.get("comments", 0),
+        "views": views, "likes": m.get("likes", 0), "comments": m.get("comments", 0),
         "shares": m.get("shares", 0), "saves": m.get("saves", 0), "clicks": m.get("link_clicks", 0),
-        "inter": inter, "er": inter / m["views"], "emv": value, "aprox": p.get("aprox", []),
-        "roi": roi(value, pay), "cpv": ratio(pay, m["views"]), "cpe": ratio(pay, inter),
+        "inter": inter, "er": inter / views if views else None, "emv": value, "aprox": p.get("aprox", []),
+        "roi": roi(value, pay), "cpv": ratio(pay, views) if views else None, "cpe": ratio(pay, inter),
+        "entrega": p.get("entrega"),
     }
 
 
-def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
-    actions = c.get("actions") or len(c["publications"])
-    per_action = round(c["value_cop"] / actions) if c.get("value_cop") else None
-    # Publicaciones con la misma clave `salida` cuentan como una sola salida y se reparten su valor.
+def _videos(c: dict[str, Any], pubs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Resumen por video (entrega) de un influencer con varios pedidos (Siberek, 24-nov-2026)."""
+    out = []
+    for e in c.get("entregas") or []:
+        ps = [p for p in pubs if p["entrega"] == e["id"]]
+        views = sum(p["views"] for p in ps if p["views"])
+        inter_v = sum(p["inter"] for p in ps if p["views"])
+        t = {k: sum(p[k] for p in ps) for k in ("likes", "comments", "inter", "emv")}
+        pay = e.get("value_cop")
+        out.append({"id": e["id"], "name": e["nombre"], "date": fecha_larga(str(e["fecha"])), "pieces": len(ps),
+                    "nets": list(dict.fromkeys(p["netName"] for p in ps)), "views": views, **t,
+                    "er": inter_v / views if views else None, "pay": pay, "roi": roi(t["emv"], pay),
+                    "cpv": ratio(pay, views) if pay and views else None, "cpe": ratio(pay, t["inter"]) if pay else None,
+                    "noViews": [p["netName"] for p in ps if not p["views"]]})
+    return out
+
+
+def _shares(pubs_cfg: list[dict[str, Any]], per_action: int | None) -> tuple[dict[str, int | None], int]:
+    """Valor de cada publicación: las de la misma clave `salida` cuentan como una sola salida y se reparten su valor."""
     groups: dict[str, list[dict[str, Any]]] = {}
-    for p in c["publications"]:
+    for p in pubs_cfg:
         groups.setdefault(str(p.get("salida") or p["id"]), []).append(p)
     share: dict[str, int | None] = {}
     for g in groups.values():
         q, r = divmod(per_action, len(g)) if per_action else (None, 0)
         for i, p in enumerate(g):
             share[p["id"]] = q + (1 if i < r else 0) if q is not None else None
+    return share, len(groups)
+
+
+def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
+    entregas = c.get("entregas")
+    if entregas:   # varios videos (pedidos), cada uno con su valor y sus salidas (Siberek, 24-nov-2026)
+        share, done, actions, pend_txt = {}, 0, 0, []
+        for e in entregas:
+            ps = [p for p in c["publications"] if p.get("entrega") == e["id"]]
+            n_act = e.get("actions") or len(ps)
+            pa = round(e["value_cop"] / n_act) if e.get("value_cop") else None
+            s_e, d_e = _shares(ps, pa)
+            share.update(s_e); done += d_e; actions += n_act
+            if not e.get("value_cop"):
+                pend_txt.append(e["nombre"])
+        per_action = None
+    else:
+        actions = c.get("actions") or len(c["publications"])
+        per_action = round(c["value_cop"] / actions) if c.get("value_cop") else None
+        share, done = _shares(c["publications"], per_action)
+        pend_txt = []
     pubs = [_publication(p, v, share[p["id"]]) for p in c["publications"]]
-    done = len(groups)
     pending = actions - done
-    t = {k: sum(p[k] for p in pubs) for k in ("views", "likes", "comments", "inter", "emv", "clicks")}
+    t = {k: sum(p[k] or 0 for p in pubs) for k in ("views", "likes", "comments", "inter", "emv", "clicks")}
     t["aprox"] = sorted({a for p in pubs for a in p.get("aprox", [])})
     pays = [p["pay"] for p in pubs]
     t["pay"] = sum(pays) if all(pays) else None
+    inter_v = sum(p["inter"] for p in pubs if p["views"])
+    # ROI/CPV/CPE con valor parcial: solo sobre las publicaciones con valor conocido (no se infla el ROI)
+    pagadas = [p for p in pubs if p["pay"]]
+    pay_p = sum(p["pay"] for p in pagadas) if entregas and pend_txt and pagadas else None
 
     # Comparación con sus reels: solo si hay un reel de LCI en su ventana (las historias no tienen historial público)
     base = c.get("baseline") or []
@@ -105,11 +146,17 @@ def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
         "summary": c.get("summary", True),
         "niche": c["niche"], "followers": c["followers"], "avatar": c.get("avatar"),
         "posts": pubs, "t": t, "nets": list(dict.fromkeys(p["netName"] for p in pubs)),
-        "er": t["inter"] / t["views"], "reach": t["views"] / c["followers"],
-        "roi": roi(t["emv"], t["pay"]), "cpv": ratio(t["pay"], t["views"]), "cpe": ratio(t["pay"], t["inter"]),
-        "value": c.get("value_cop"), "actions": actions, "perAction": per_action, "done": done,
-        "roiNote": (f"aún falta{'n' if pending > 1 else ''} {pending} "
+        "er": inter_v / t["views"], "reach": t["views"] / c["followers"],
+        "roi": roi(sum(p["emv"] for p in pagadas), pay_p) if pay_p else roi(t["emv"], t["pay"]),
+        "cpv": ratio(pay_p, sum(p["views"] or 0 for p in pagadas)) if pay_p else ratio(t["pay"], t["views"]),
+        "cpe": ratio(pay_p, sum(p["inter"] for p in pagadas)) if pay_p else ratio(t["pay"], t["inter"]),
+        "payShown": pay_p or t["pay"],
+        "value": None if entregas else c.get("value_cop"), "actions": actions, "perAction": per_action, "done": done,
+        "roiNote": (f"solo {', '.join(e['nombre'] for e in entregas if e.get('value_cop'))}; falta el valor de "
+                    f"{' y '.join(pend_txt)}") if pend_txt else
+                   (f"aún falta{'n' if pending > 1 else ''} {pending} "
                     f"{'acciones' if pending > 1 else 'acción'} por validar") if pending > 0 else None,
+        "videos": _videos(c, pubs),
         "reels": [[r["views"], fecha_corta(r.get("posted_on"))] for r in base],
         "lci": lci, "marks": {str(i): r["mark"] for i, r in enumerate(base) if r.get("mark")},
         "med": med, "idx": idx,

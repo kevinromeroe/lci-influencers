@@ -182,9 +182,15 @@ creators:
     summary: false              # la paga LCI directamente: tiene pestaña, pero no suma al resumen
     value_cop: 3300000          # valor por las 3 salidas (no está en el Excel)
     actions: 3                  # TikTok + reel de Instagram + short de YouTube, mismo video
+    # Varios videos (Kevin, 24-nov-2026): la pestaña muestra el resumen por video y el detalle por pieza.
+    # Con `entregas`, el valor y las salidas se toman de cada video (value_cop/actions de arriba quedan de referencia).
+    entregas:
+      - {id: v1, nombre: "Video 1", fecha: "2026-10-11", value_cop: 3300000, actions: 3}
+      - {id: v2, nombre: "Video 2", fecha: "2026-11-15", value_cop: null, actions: 4}   # valor pendiente (Kevin); 4 salidas, una por red: por confirmar
 
     publications:
       - id: "7695240858781715718"
+        entrega: v1
         network: tt
         format: Video
         posted_on: "2026-10-11"
@@ -192,6 +198,7 @@ creators:
         type: Colaboración pagada
         metrics: {views: 264800, likes: 58600, comments: 305, shares: 849, saves: 3613}
       - id: DeWnDUyiBte
+        entrega: v1
         network: ig
         format: Reel
         posted_on: "2026-10-11"
@@ -199,12 +206,46 @@ creators:
         type: Colaboración pagada
         metrics: {views: 141000, likes: 16463, comments: 125}
       - id: 5961OWTgV5M
+        entrega: v1
         network: yt
         format: Short
         posted_on: "2026-10-11"
         url: https://youtube.com/shorts/5961OWTgV5M
         type: Colaboración pagada
         metrics: {views: 27289, likes: 3610, comments: 43}
+      - id: "7708415919386561844"
+        entrega: v2
+        network: tt
+        format: Video
+        posted_on: "2026-11-15"
+        url: https://www.tiktok.com/@siberek/video/7708415919386561844
+        type: Colaboración pagada
+        metrics: {views: 817400, likes: 221300, comments: 967, shares: 3661, saves: 17176}
+      - id: Dfwu4YMEUCS
+        entrega: v2
+        network: ig
+        format: Reel
+        posted_on: "2026-11-15"   # fecha por confirmar (el video salió el 15-nov en TikTok y YouTube)
+        url: https://www.instagram.com/p/Dfwu4YMEUCS/
+        type: Colaboración pagada
+        metrics: {views: 234817, likes: 27394, comments: 337}
+      - id: XXe8S74BesU
+        entrega: v2
+        network: yt
+        format: Video
+        posted_on: "2026-11-15"
+        url: https://www.youtube.com/watch?v=XXe8S74BesU
+        type: Colaboración pagada
+        metrics: {views: 310014, likes: 34961, comments: 286}
+      - id: "1611880540956598"
+        entrega: v2
+        network: fb
+        format: Reel
+        posted_on: "2026-11-15"   # Facebook no muestra la fecha sin sesión: por confirmar
+        url: https://www.facebook.com/reel/1611880540956598
+        type: Colaboración pagada
+        metrics: {views: null, likes: 19200, comments: 348, shares: 242}   # «19,2 mil» me gusta; sin reproducciones públicas
+        aprox: [likes]
 
     # Comparación: reels de Instagram (TikTok y YouTube no tienen ventana de comparación aún)
     baseline:

@@ -15,10 +15,12 @@ class CuadreOctubre(unittest.TestCase):
         cls.by = {c["handle"]: c for c in cls.data["creators"]}
 
     def test_siberek_tiktok_con_compartidos_y_guardados(self):
-        tt = next(p for p in self.by["siberekk"]["posts"] if p["net"] == "tt")
+        tt = next(p for p in self.by["siberekk"]["posts"] if p["net"] == "tt" and p["entrega"] == "v1")
         self.assertEqual(tt["emv"], 58600 * 7200 + 305 * 10500 + 849 * 12350 + 3613 * 13560)
-        self.assertEqual(self.by["siberekk"]["t"]["emv"], 630_889_530)
-        self.assertEqual(self.by["siberekk"]["nets"], ["TikTok", "Instagram", "YouTube"])
+        # Ficha aprobada = Video 1 (oct). El Video 2 (15-nov) se suma aparte en el resumen por video (24-nov-2026).
+        v1 = next(x for x in self.by["siberekk"]["videos"] if x["id"] == "v1")
+        self.assertEqual(v1["emv"], 630_889_530)
+        self.assertEqual(v1["nets"], ["TikTok", "Instagram", "YouTube"])
 
     def test_emv_formula_del_cliente(self):
         v = load_client()["emv"]["valores"]
@@ -61,7 +63,9 @@ class CuadreOctubre(unittest.TestCase):
         self.assertEqual(self.by["estebango__"]["t"]["pay"], 8_904_056)
         self.assertEqual(self.by["unareinadeldrama"]["t"]["pay"], round(10_893_260 / 4))
         self.assertEqual(self.data["totals"]["pay"], 8_904_056 + 2_723_315 + round(28_466_353 / 3))  # Siberek no suma
-        self.assertEqual(self.by["siberekk"]["perAction"], 1_100_000)
+        v1 = next(x for x in self.by["siberekk"]["videos"] if x["id"] == "v1")
+        self.assertEqual(v1["pay"], 3_300_000)
+        self.assertEqual([p["pay"] for p in self.by["siberekk"]["posts"] if p["entrega"] == "v1"], [1_100_000] * 3)
 
     def test_salidas_pendientes_y_ejecucion(self):
         r = self.by["unareinadeldrama"]
