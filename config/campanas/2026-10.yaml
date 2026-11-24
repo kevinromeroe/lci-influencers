@@ -225,10 +225,10 @@ creators:
         entrega: v2
         network: ig
         format: Reel
-        posted_on: "2026-11-15"   # fecha por confirmar (el video salió el 15-nov en TikTok y YouTube)
+        posted_on: "2026-11-15"   # 15-nov 7:02 a. m. (lector de Instagram sin sesión, 24-nov-2026)
         url: https://www.instagram.com/p/Dfwu4YMEUCS/
         type: Colaboración pagada
-        metrics: {views: 234817, likes: 27394, comments: 337}
+        metrics: {views: 234817, likes: 27401, comments: 337}   # me gusta y comentarios: sin sesión; vistas: Apify (Instagram no las da sin sesión)
       - id: XXe8S74BesU
         entrega: v2
         network: yt
