@@ -328,7 +328,7 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
       '<section class="who" aria-label="Influencer">'+
         '<div class="id"><span class="av" aria-hidden="true">'+face(c)+'</span><div><h2>'+c.name+'</h2>'+
           '<div class="sub"><span>@'+c.handle+'</span><span><b>'+int(c.followers)+'</b> seguidores</span><span class="niche">'+c.niche+'</span></div>'+
-          (c.value?'<div class="sub"><span>Valor del talento <b>'+cop(c.value)+'</b></span><span><b>'+c.actions+'</b> '+(c.actions===1?'salida':'salidas')+' · <b>'+cop(c.perAction)+'</b> por salida</span><span><b>'+c.done+' de '+c.actions+'</b> '+(c.done===1?'ejecutada':'ejecutadas')+'</span></div>':'')+'</div></div>'+
+          (c.value?'<div class="sub"><span>Valor del talento <b>'+cop(c.value)+'</b></span><span><b>'+c.actions+'</b> '+(c.actions===1?'salida pactada':'salidas pactadas')+' · <b>'+cop(c.perAction)+'</b> por salida</span><span><b>'+c.done+'</b> '+(c.done===1?'publicada':'publicadas')+(c.actions>c.done?' · <b>'+(c.actions-c.done)+'</b> '+(c.actions-c.done===1?'pendiente':'pendientes'):'')+'</span></div>':'')+'</div></div>'+
         c.posts.map(function(p){return '<a class="pub" href="'+p.url+'" target="_blank" rel="noopener">'+net(p)+
           '<span><b>'+p.format+' en '+p.netName+'</b><span>'+p.date+' · '+p.type+(p.source==='insights'?' · Datos de Insights del talento':'')+'</span></span></a>';}).join('')+
       '</section>'+
@@ -437,7 +437,7 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
       '</section>'+
 
       '<section class="panel" aria-labelledby="h-i"><h2 id="h-i">Influencers por EMV</h2><div class="tw"><table>'+
-        '<thead><tr><th>#</th><th>Influencer</th><th>Nicho</th><th class="r">Seguidores</th><th class="r">Salidas</th><th class="r">Valor por salida</th><th class="r">Engagement</th><th class="r">Frente a su contenido</th><th class="r">CPV</th><th class="r">EMV</th><th class="r">ROI</th></tr></thead><tbody>'+
+        '<thead><tr><th>#</th><th>Influencer</th><th>Nicho</th><th class="r">Seguidores</th><th class="r">Salidas publicadas</th><th class="r">Valor por salida</th><th class="r">Engagement</th><th class="r">Frente a su contenido</th><th class="r">CPV</th><th class="r">EMV</th><th class="r">ROI</th></tr></thead><tbody>'+
         CS.map(function(c,i){return '<tr><td class="rk">'+(i+1)+'</td>'+
           '<td><div class="cell"><span class="av">'+face(c)+'</span><span><button type="button" class="go" data-go="'+c.id+'">'+c.name+'</button><small>@'+c.handle+'</small></span></div></td>'+
           '<td><span class="niche">'+c.niche+'</span></td><td class="r num">'+int(c.followers)+'</td><td class="r num">'+c.done+' de '+c.actions+'</td><td class="r num">'+costo(c.perAction)+'</td><td class="r num">'+pct(c.er)+'</td>'+
