@@ -131,7 +131,7 @@ creators:
     network: ig
     name: Juliana Jurado
     niche: Diseño de interiores y arquitectura
-    followers: 224000           # perfil de Instagram (9 nov 2026)
+    followers: 223122           # perfil de Instagram (26 nov 2026)
     avatar: zambo.design.jpg
     value_cop: 28466353         # valor para LCI del talento (Excel)
     actions: 3                  # 1 reel + ráfaga de historias + short de YouTube
@@ -168,6 +168,13 @@ creators:
         source: insights
         salida: rafaga
         metrics: {views: 4416, likes: 35, comments: 2, shares: 0, link_clicks: 91}
+      - id: mIQGbfRLBOw
+        network: yt
+        format: Short
+        posted_on: "2026-11-03"
+        url: https://youtube.com/shorts/mIQGbfRLBOw
+        type: Colaboración pagada
+        metrics: {views: 49, likes: 3, comments: 0}
 
     notes:
       - "Las historias llevaron al menos <b>431 clics al enlace</b> de LCI (340 y 91 en las historias 2 y 3; la captura de la historia 1 no trae ese dato) y casi todas las visualizaciones fueron de sus seguidores (97 % a 99 %)."
