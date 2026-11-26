@@ -114,3 +114,14 @@ Corre sola en el OptiPlex **lunes y jueves a las 7:00** (`~/ops/influencers/corr
 5. Si fallan las pruebas o el build, el trabajo queda en una rama `fallida/<fecha>-<repo>` y no se publica.
 
 Esta sección reemplaza los pasos manuales de lectura por Chrome para Instagram; el resto de las reglas sigue igual.
+
+### Candado: no publicar desde otro equipo
+
+El reporte lo construye y publica solo el OptiPlex, porque sus capturas (`datos/`, fuera de git) son las más recientes.
+`scripts/build_reporte.py` se detiene (código 2, mensaje «[ALTO]») si la captura del equipo donde corre es más vieja
+que la del reporte ya construido. Lo prueba `tests/test_candado.py`.
+
+- Desde el portátil: sube solo cambios de `config/`, `templates/` o `pipeline/`. La próxima corrida (lunes o jueves 7:00) publica.
+- Si un cambio de plantilla debe salir antes de la corrida, se aplica sobre el último `2026-10/index.html` automático, sin correr el build.
+- `--forzar` salta el candado; úsalo solo con una razón clara (por ejemplo, el OptiPlex fuera de servicio y una captura nueva en el portátil).
+- Origen: el 26-nov-2026 un build del portátil con la captura del 4-nov reemplazó las cifras del día (EMV $44,5 M → $39,0 M).

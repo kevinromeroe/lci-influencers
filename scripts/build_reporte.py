@@ -8,10 +8,16 @@ La raíz del sitio (index.html) redirige a la campaña más reciente.
 Uso:
     python scripts/build_reporte.py            # todas las campañas
     python scripts/build_reporte.py 2026-10    # una campaña
+    python scripts/build_reporte.py --forzar   # saltar el candado (solo con una razón clara)
+
+Candado: el reporte lo publica la corrida automática del OptiPlex con su captura más
+reciente. Si la captura de este equipo es más vieja que la del reporte ya construido,
+el build se detiene: construir aquí bajaría las cifras publicadas (pasó el 26-nov-2026).
 """
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -27,14 +33,38 @@ TEMPLATE = PROJECT_ROOT / "templates" / "reporte.html"
 MARKER = "/*__DATA__*/null"
 
 
-def build(campaign_id: str, client: dict) -> Path:
+class CapturaVieja(RuntimeError):
+    """La captura local es más vieja que la del reporte ya construido."""
+
+
+def captura_del_reporte(path: Path) -> str | None:
+    """Fecha de captura con la que se construyó el reporte existente (None si no hay)."""
+    if not path.exists():
+        return None
+    m = re.search(r'"captured_on"\s*:\s*"(\d{4}-\d{2}-\d{2})"', path.read_text(encoding="utf-8"))
+    return m.group(1) if m else None
+
+
+def verificar_frescura(local: str | None, publicada: str | None) -> None:
+    """Detiene el build si los datos de este equipo son más viejos que los del reporte construido."""
+    if publicada and (local is None or local < publicada):
+        raise CapturaVieja(
+            f"La captura de este equipo ({local or 'ninguna'}) es más vieja que la del reporte "
+            f"construido ({publicada}). El reporte lo construye la corrida automática del OptiPlex: "
+            "sube solo los cambios de config, plantilla o cálculo y deja que la próxima corrida publique. "
+            "Ver docs/RUNBOOK.md («Corrida automática»). Para saltar el candado: --forzar.")
+
+
+def build(campaign_id: str, client: dict, forzar: bool = False) -> Path:
     capture = latest_capture(campaign_id)
+    out = PROJECT_ROOT / campaign_id / "index.html"
+    if not forzar:
+        verificar_frescura(capture["captured_on"] if capture else None, captura_del_reporte(out))
     data = build_data(client, load_campaign(campaign_id), capture)
     html = TEMPLATE.read_text(encoding="utf-8")
     if MARKER not in html:
         raise RuntimeError(f"La plantilla no tiene el marcador {MARKER}")
     payload = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-    out = PROJECT_ROOT / campaign_id / "index.html"
     out.parent.mkdir(exist_ok=True)
     out.write_text(html.replace(MARKER, payload), encoding="utf-8")
     log.info("reporte_ok", extra={"campaign": campaign_id, "creators": len(data["creators"]),
@@ -55,9 +85,14 @@ def write_root_redirect(latest: str) -> None:
 
 def main() -> int:
     client = load_client()
-    ids = sys.argv[1:] or campaign_ids()
-    for cid in ids:
-        build(cid, client)
+    forzar = "--forzar" in sys.argv[1:]
+    ids = [a for a in sys.argv[1:] if not a.startswith("--")] or campaign_ids()
+    try:
+        for cid in ids:
+            build(cid, client, forzar)
+    except CapturaVieja as e:
+        print(f"[ALTO] {e}", file=sys.stderr)
+        return 2
     write_root_redirect(campaign_ids()[-1])
     print(f"[DONE] Reportes generados: {', '.join(ids)}")
     return 0
