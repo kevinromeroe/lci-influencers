@@ -47,9 +47,9 @@ class CuadreOctubre(unittest.TestCase):
     def test_totales_igual_suma_de_partes(self):
         T = self.data["totals"]
         self.assertEqual(T["emv"], sum(c["t"]["emv"] for c in self.data["creators"] if c["summary"]))
-        self.assertEqual(T["emv"], 34_618_200 + 342_130 + 842_400 + 492_350 + 273_000 + 3 * 7_200 + 614 * 7_200 + 14 * 10_500)
-        self.assertEqual(T["views"], 81_900 + 531 + 6_024 + 5_252 + 4_416 + 49 + 8_697)
-        self.assertEqual(T["inter"], 4_787 + 31 + 117 + 63 + 37 + 3 + 628)
+        self.assertEqual(T["emv"], 34_618_200 + 342_130 + 842_400 + 492_350 + 273_000 + 3 * 7_200 + 630 * 7_200 + 14 * 10_500)
+        self.assertEqual(T["views"], 81_900 + 531 + 6_024 + 5_252 + 4_416 + 49 + 8_813)
+        self.assertEqual(T["inter"], 4_787 + 31 + 117 + 63 + 37 + 3 + 644)
         self.assertEqual(sum(n["emv"] for n in self.data["networks"]), T["emv"])
 
     def test_ranking_por_emv(self):
@@ -87,7 +87,7 @@ class CuadreOctubre(unittest.TestCase):
         # 3 ráfagas = 1 salida (datos de Insights) + short de YouTube + reel del 25-nov = 3 de 3 salidas
         j = self.by["zambo.design"]
         self.assertEqual((j["done"], j["actions"]), (3, 3))
-        self.assertEqual(j["t"]["emv"], 842_400 + 492_350 + 273_000 + 3 * 7_200 + 614 * 7_200 + 14 * 10_500)
+        self.assertEqual(j["t"]["emv"], 842_400 + 492_350 + 273_000 + 3 * 7_200 + 630 * 7_200 + 14 * 10_500)
         self.assertEqual(j["t"]["pay"], 3 * round(28_466_353 / 3))
         self.assertEqual([p["format"] for p in j["posts"]][:3], ["Ráfaga"] * 3)
         self.assertEqual(j["t"]["clicks"], 431)
@@ -152,7 +152,7 @@ class CapturaOctubre(unittest.TestCase):
         self.assertEqual(c["posts"][0]["date"], "8 oct 2026")
 
     def test_total(self):
-        self.assertEqual(self.data["totals"]["emv"], 34_849_800 + 2_579_530 + 842_400 + 492_350 + 273_000 + 3 * 7_200 + 614 * 7_200 + 14 * 10_500)
+        self.assertEqual(self.data["totals"]["emv"], 34_849_800 + 2_579_530 + 842_400 + 492_350 + 273_000 + 3 * 7_200 + 630 * 7_200 + 14 * 10_500)
 
     def test_roi(self):
         self.assertEqual(round(self.by["estebango__"]["roi"] * 100), 291)

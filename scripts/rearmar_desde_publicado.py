@@ -32,7 +32,10 @@ for c in camp["creators"]:
     for p in c["publications"]:
         q = pubposts.get(p["id"])
         if q:
-            p["metrics"] = {k: q[k] for k in ("views", "likes", "comments", "shares", "saves") if q.get(k) is not None}
+            # Solo suben: la cifra más alta entre la publicada (OptiPlex) y la de la config (lectura manual)
+            cfg = p.get("metrics") or {}
+            p["metrics"] = {k: max(q.get(k) or 0, cfg.get(k) or 0) for k in ("views", "likes", "comments", "shares", "saves")
+                            if q.get(k) is not None or cfg.get(k) is not None}
             if q.get("aprox"):
                 p["aprox"] = list(q["aprox"])
 

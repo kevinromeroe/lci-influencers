@@ -181,7 +181,7 @@ creators:
         posted_on: "2026-11-25"
         url: https://www.instagram.com/reel/DgK0gr4yTnX/
         type: Colaboración pagada
-        metrics: {views: 8697, likes: 614, comments: 14}     # lectura del 27-nov-2026
+        metrics: {views: 8813, likes: 630, comments: 14}     # lectura del 27-nov-2026 (tarde)
 
     # Comparación: reel de LCI (25-nov) frente a sus 11 reels anteriores (lectura del 27-nov-2026)
     baseline:
