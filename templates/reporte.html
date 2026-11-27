@@ -355,7 +355,11 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
 
   function render(c){
     var tk = c.talk, w = function(x){return (x/tk.read*100).toFixed(1)+'%';};
-    var etiqueta = function(p, i){ return c.nets.length>1 ? p.netName : p.format.toLowerCase()+' '+(i+1)+':'; };
+    // Etiqueta de cada pieza en las conclusiones: formato (numerado si se repite) y red si hay varias
+    var etiqueta = function(p){
+      var mismos = c.posts.filter(function(x){return x.format===p.format && x.net===p.net;});
+      return p.format.toLowerCase()+(mismos.length>1?' '+(mismos.indexOf(p)+1):'')+(c.nets.length>1?' de '+p.netName:'')+':';
+    };
     document.getElementById('view').innerHTML =
       '<section class="who" aria-label="Influencer">'+
         '<div class="id"><span class="av" aria-hidden="true">'+face(c)+'</span><div><h2>'+c.name+'</h2>'+
@@ -371,7 +375,7 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
         '<li><span>'+(c.videos.length>1
           ? 'Sus '+c.videos.length+' videos sumaron <b>'+int(c.t.views)+' reproducciones</b> en '+lista(c.nets)+' ('+c.videos.map(function(v){return v.name.toLowerCase()+': '+int(v.views);}).join('; ')+'), con un engagement de '+pct(c.er)+'.'+(c.videos.some(function(v){return v.noViews.length;})?' Facebook no muestra reproducciones públicas: sus me gusta y comentarios sí suman al EMV.':'')
           : c.posts.length>1
-          ? (c.done>1?'Sus '+c.done+' salidas sumaron':'Su salida sumó')+' <b>'+int(c.t.views)+' reproducciones</b> ('+c.posts.map(function(p,i){return etiqueta(p,i)+' '+int(p.views);}).join(', ')+'), con un engagement de '+pct(c.er)+'.'
+          ? (c.done>1?'Sus '+c.done+' salidas sumaron':'Su salida sumó')+' <b>'+int(c.t.views)+' reproducciones</b> ('+c.posts.map(function(p){return etiqueta(p)+' '+int(p.views);}).join(', ')+'), con un engagement de '+pct(c.er)+'.'
           : 'El reel sumó <b>'+int(c.t.views)+' reproducciones</b>, el '+pct(c.reach)+' de sus seguidores, con un engagement de '+pct(c.er)+'.')+'</span></li>'+
         (c.idx!==null?'<li><span>'+(c.videos.length>1?'Su reel de Instagram del '+c.videos[0].name.toLowerCase()+' rindió':c.nets.length>1?'Su reel de Instagram rindió':'Rindió')+' <b>'+n2.format(c.idx)+'× frente a su contenido habitual</b>'+(c.isMin?': fue el de menos reproducciones entre sus últimos '+c.reels.length+' reels':'')+'. '+c.cause+'</span></li>':'')+
         c.charts.map(function(g){return '<li><span>Su reel de Instagram del '+g.name.toLowerCase()+' rindió <b>'+n2.format(g.idx)+'× frente a su contenido habitual</b> (mediana de sus otros reels: '+k(g.med)+').</span></li>';}).join('')+

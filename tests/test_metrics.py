@@ -61,27 +61,27 @@ class CuadreOctubre(unittest.TestCase):
     def test_pago_por_accion(self):
         # Valor para LCI ÷ número de acciones del talento
         self.assertEqual(self.by["estebango__"]["t"]["pay"], 8_904_056)
-        self.assertEqual(self.by["unareinadeldrama"]["t"]["pay"], 2 * round(10_893_260 / 4))
-        self.assertEqual(self.data["totals"]["pay"], 8_904_056 + 2 * 2_723_315 + 3 * round(28_466_353 / 3))  # Siberek no suma
+        self.assertEqual(self.by["unareinadeldrama"]["t"]["pay"], round(10_893_260 / 4))
+        self.assertEqual(self.data["totals"]["pay"], 8_904_056 + 2_723_315 + 3 * round(28_466_353 / 3))  # Siberek no suma
         v1 = next(x for x in self.by["siberekk"]["videos"] if x["id"] == "v1")
         self.assertEqual(v1["pay"], 3_300_000)
         self.assertEqual([p["pay"] for p in self.by["siberekk"]["posts"] if p["entrega"] == "v1"], [1_100_000] * 3)
 
     def test_salidas_pendientes_y_ejecucion(self):
         r = self.by["unareinadeldrama"]
-        self.assertEqual((r["done"], r["actions"]), (2, 4))
-        self.assertEqual(r["roiNote"], "aún faltan 2 acciones por validar")
+        self.assertEqual((r["done"], r["actions"]), (1, 4))
+        self.assertEqual(r["roiNote"], "aún faltan 3 acciones por validar")
         self.assertIsNone(self.by["estebango__"]["roiNote"])
         T = self.data["totals"]
-        self.assertEqual((T["budget"], T["budgetActions"], T["done"]), (149_317_206, 19, 6))
+        self.assertEqual((T["budget"], T["budgetActions"], T["done"]), (149_317_206, 19, 5))
 
     def test_salida_agrupada(self):
-        # Reina: reel y TikTok cuentan como 2 salidas (Kevin, 27-nov-2026); las 3 ráfagas de Juliana, como 1
+        # Reina: reel + TikTok = 1 salida unificada, 1 de 4 (Kevin, 27-nov-2026)
         r = self.by["unareinadeldrama"]
         self.assertEqual(len(r["posts"]), 2)
-        self.assertEqual(r["done"], 2)
-        self.assertEqual(r["t"]["pay"], 2 * round(10_893_260 / 4))
-        self.assertEqual(r["roiNote"], "aún faltan 2 acciones por validar")
+        self.assertEqual(r["done"], 1)
+        self.assertEqual(r["t"]["pay"], round(10_893_260 / 4))
+        self.assertEqual(r["roiNote"], "aún faltan 3 acciones por validar")
 
     def test_historias_de_juliana(self):
         # 3 ráfagas = 1 salida (datos de Insights) + short de YouTube + reel del 25-nov = 3 de 3 salidas
@@ -151,8 +151,8 @@ class CapturaOctubre(unittest.TestCase):
 
     def test_roi(self):
         self.assertEqual(round(self.by["estebango__"]["roi"] * 100), 291)
-        self.assertEqual(round(self.by["unareinadeldrama"]["roi"] * 100), -53)
-        self.assertEqual(round(self.data["totals"]["roi"] * 100), 2)
+        self.assertEqual(round(self.by["unareinadeldrama"]["roi"] * 100), -5)
+        self.assertEqual(round(self.data["totals"]["roi"] * 100), 9)
 
     def test_cpv_cpe(self):
         e = self.by["estebango__"]
