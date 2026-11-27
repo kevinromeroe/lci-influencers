@@ -79,7 +79,7 @@ creators:
     followers: 108923
     avatar: unareinadeldrama.jpg
     value_cop: 10893260
-    actions: 4                  # 4 salidas pactadas; reel + TikTok de UX cuentan como 1
+    actions: 4                  # 4 salidas pactadas; reel y TikTok cuentan como 2 salidas (Kevin, 27-nov-2026)
 
     publications:
       - id: DePf9BMupqx
@@ -88,7 +88,6 @@ creators:
         posted_on: "2026-10-08"         # la ficha decía 9 oct; Instagram confirma el 8
         url: https://www.instagram.com/reel/DePf9BMupqx/
         type: Colaboración pagada
-        salida: ux                      # reel + TikTok = una sola salida (el TikTok fue bonificado)
         metrics: {views: 10400, likes: 292, comments: 6}
       - id: "7698887105354747143"
         network: tt
@@ -96,7 +95,6 @@ creators:
         posted_on: "2026-10-20"
         url: https://www.tiktok.com/@unareinadeldrama/video/7698887105354747143
         type: Colaboración pagada
-        salida: ux
         metrics: {views: 531, likes: 26, comments: 5, shares: 5, saves: 3}
 
     baseline:
@@ -134,16 +132,16 @@ creators:
     followers: 223122           # perfil de Instagram (26 nov 2026)
     avatar: zambo.design.jpg
     value_cop: 28466353         # valor para LCI del talento (Excel)
-    actions: 3                  # 1 reel + ráfaga de historias + short de YouTube
+    actions: 3                  # 1 reel + ráfagas + short de YouTube
 
-    # Ráfaga de 3 historias (26 oct): una sola salida. Las historias vencen a las 24 h,
+    # 3 ráfagas (26 oct): una sola salida. Las ráfagas vencen a las 24 h,
     # así que las métricas vienen de los Insights que compartió el talento (capturas del 9 nov).
-    # Historia 1: la captura solo trae el total de interacciones (117); se valoran como me gusta,
+    # Ráfaga 1: la captura solo trae el total de interacciones (117); se valoran como me gusta,
     # el valor más bajo del benchmark, para no inflar el EMV.
     publications:
       - id: "4016529777741672404"
         network: ig
-        format: Historia
+        format: Ráfaga
         posted_on: "2026-10-26"
         url: https://www.instagram.com/stories/zambo.design/4016529777741672404/
         type: Colaboración pagada
@@ -152,7 +150,7 @@ creators:
         metrics: {views: 6024, likes: 117, comments: 0}
       - id: "4016532609526030225"
         network: ig
-        format: Historia
+        format: Ráfaga
         posted_on: "2026-10-26"
         url: https://www.instagram.com/stories/zambo.design/4016532609526030225/
         type: Colaboración pagada
@@ -161,7 +159,7 @@ creators:
         metrics: {views: 5252, likes: 55, comments: 8, shares: 1, link_clicks: 340}
       - id: "4016533382762747432"
         network: ig
-        format: Historia
+        format: Ráfaga
         posted_on: "2026-10-26"
         url: https://www.instagram.com/stories/zambo.design/4016533382762747432/
         type: Colaboración pagada
@@ -175,10 +173,17 @@ creators:
         url: https://youtube.com/shorts/mIQGbfRLBOw
         type: Colaboración pagada
         metrics: {views: 49, likes: 3, comments: 0}
+      - id: DgK0gr4yTnX
+        network: ig
+        format: Reel
+        posted_on: "2026-11-25"
+        url: https://www.instagram.com/reel/DgK0gr4yTnX/
+        type: Colaboración pagada
+        metrics: {views: 8672, likes: 614, comments: 14}     # lectura del 27-nov-2026
 
     notes:
-      - "Las historias llevaron al menos <b>431 clics al enlace</b> de LCI (340 y 91 en las historias 2 y 3; la captura de la historia 1 no trae ese dato) y casi todas las visualizaciones fueron de sus seguidores (97 % a 99 %)."
-      - "De la historia 1 solo tenemos el total de interacciones (117); las valoramos como me gusta, el valor más bajo, para no inflar el EMV."
+      - "Las ráfagas llevaron al menos <b>431 clics al enlace</b> de LCI (340 y 91 en las ráfagas 2 y 3; la captura de la ráfaga 1 no trae ese dato) y casi todas las visualizaciones fueron de sus seguidores (97 % a 99 %)."
+      - "De la ráfaga 1 solo tenemos el total de interacciones (117); las valoramos como me gusta, el valor más bajo, para no inflar el EMV."
 
   - handle: siberekk
     network: ig

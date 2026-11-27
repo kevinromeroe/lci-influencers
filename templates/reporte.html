@@ -99,6 +99,18 @@ a.pub{text-decoration:none;color:inherit}
 .net svg{width:22px;height:22px}
 .pub b{display:block;font-size:14px}
 .pub span{font-size:12.5px;color:var(--muted)}
+/* Publicaciones agrupadas por entrega o fecha */
+.pubs h2 small{font-size:14px;font-weight:400;color:var(--muted);margin-left:6px}
+.pg{display:grid;grid-template-columns:190px minmax(0,1fr);gap:10px 20px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.pg:first-of-type{border-top:0;padding-top:4px}
+.pd b{display:block;font-size:15px}
+.pd span{font-size:13px;color:var(--muted)}
+.pl{display:flex;flex-wrap:wrap;gap:8px}
+.pl .pub{padding:6px 12px 6px 6px;gap:10px}
+.pl .net{width:30px;height:30px;border-radius:7px}
+.pl .net svg{width:17px;height:17px}
+.pl .pub:hover{border-color:var(--accent)}
+@media (max-width:620px){.pg{grid-template-columns:1fr}}
 
 /* Indicadores */
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow:hidden}
@@ -256,7 +268,7 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
     yt:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M9.5 8.2v7.6L16 12z"/></svg>',
     fb:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H7.9v3h2.6V21z"/></svg>'
   };
-  var FORMATS = [['Reel','reels'],['Video','videos'],['Short','shorts'],['Historia','historias'],['Carrusel','carruseles'],['Post','posts']];
+  var FORMATS = [['Reel','reels'],['Video','videos'],['Short','shorts'],['Historia','historias'],['Ráfaga','ráfagas'],['Carrusel','carruseles'],['Post','posts']];
 
   var nf = new Intl.NumberFormat('es-CO',{maximumFractionDigits:0});
   var n1 = new Intl.NumberFormat('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1});
@@ -306,7 +318,7 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
   function kpisDe(c, tk){
     var t = [
       '<div class="kpi"><span class="l">Reproducciones</span><span class="v num">'+int(c.t.views)+'</span><span class="d">'+(c.nets.length>1?'En '+lista(c.nets):pct(c.reach)+' de sus seguidores')+'</span></div>',
-      '<div class="kpi"><span class="l">Engagement</span><span class="v num">'+pct(c.er)+'</span><span class="d">'+ax(c.t,'likes')+int(c.t.likes)+' me gusta y '+int(c.t.comments)+' '+(c.posts.every(function(p){return p.format==='Historia';})?'respuestas':'comentarios')+'</span></div>'
+      '<div class="kpi"><span class="l">Engagement</span><span class="v num">'+pct(c.er)+'</span><span class="d">'+ax(c.t,'likes')+int(c.t.likes)+' me gusta y '+int(c.t.comments)+' '+(c.posts.every(function(p){return p.format==='Historia'||p.format==='Ráfaga';})?'respuestas':'comentarios')+'</span></div>'
     ];
     if (c.idx !== null) t.push(c.charts.length
       ? '<div class="kpi"><span class="l">Frente a su contenido habitual</span><span class="v num">'+[{name:c.videos[0].name,idx:c.idx}].concat(c.charts).map(function(g){return '<span class="'+(g.idx<1?'warn':'good')+'">'+n2.format(g.idx)+'×</span>';}).join(' · ')+'</span><span class="d">'+[c.videos[0].name].concat(c.charts.map(function(g){return g.name;})).join(' · ')+', frente a la mediana de sus reels</span></div>'
@@ -321,6 +333,26 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
     return t.join('');
   }
 
+  // Publicaciones del influencer agrupadas por entrega (video) o por fecha: una fila por grupo,
+  // con la fecha y el número de piezas a la izquierda y las piezas enlazadas a la derecha.
+  function pubsHtml(c){
+    var groups = [], byKey = {};
+    c.posts.forEach(function(p){
+      var v = p.entrega && c.videos ? c.videos.filter(function(x){return x.id===p.entrega;})[0] : null;
+      var key = v ? v.id : p.date;
+      if (!byKey[key]) { byKey[key] = {name: v && c.videos.length>1 ? v.name : null, date: p.date, posts: []}; groups.push(byKey[key]); }
+      byKey[key].posts.push(p);
+    });
+    var n = c.posts.length;
+    return '<section class="panel pubs" aria-labelledby="h-p"><h2 id="h-p">Publicaciones <small>'+n+(n===1?' pieza':' piezas')+'</small></h2>'+
+      groups.map(function(g){
+        var ins = g.posts.some(function(p){return p.source==='insights';});
+        return '<div class="pg"><div class="pd"><b>'+g.date+'</b><span>'+(g.name?g.name+' · ':'')+g.posts.length+(g.posts.length===1?' pieza':' piezas')+(ins?' · datos de Insights del talento':'')+'</span></div>'+
+          '<div class="pl">'+g.posts.map(function(p){return '<a class="pub" href="'+p.url+'" target="_blank" rel="noopener">'+net(p)+'<b>'+p.format+' en '+p.netName+'</b></a>';}).join('')+'</div></div>';
+      }).join('')+
+    '</section>';
+  }
+
   function render(c){
     var tk = c.talk, w = function(x){return (x/tk.read*100).toFixed(1)+'%';};
     var etiqueta = function(p, i){ return c.nets.length>1 ? p.netName : p.format.toLowerCase()+' '+(i+1)+':'; };
@@ -329,9 +361,8 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
         '<div class="id"><span class="av" aria-hidden="true">'+face(c)+'</span><div><h2>'+c.name+'</h2>'+
           '<div class="sub"><span>@'+c.handle+'</span><span><b>'+int(c.followers)+'</b> seguidores</span><span class="niche">'+c.niche+'</span></div>'+
           (c.value?'<div class="sub"><span>Valor del talento <b>'+cop(c.value)+'</b></span><span><b>'+c.actions+'</b> '+(c.actions===1?'salida pactada':'salidas pactadas')+' · <b>'+cop(c.perAction)+'</b> por salida</span><span><b>'+c.done+'</b> '+(c.done===1?'publicada':'publicadas')+(c.actions>c.done?' · <b>'+(c.actions-c.done)+'</b> '+(c.actions-c.done===1?'pendiente':'pendientes'):'')+'</span></div>':'')+'</div></div>'+
-        c.posts.map(function(p){return '<a class="pub" href="'+p.url+'" target="_blank" rel="noopener">'+net(p)+
-          '<span><b>'+p.format+' en '+p.netName+'</b><span>'+p.date+' · '+p.type+(p.source==='insights'?' · Datos de Insights del talento':'')+'</span></span></a>';}).join('')+
       '</section>'+
+      pubsHtml(c)+
 
       '<section class="kpis" aria-label="Indicadores">'+kpisDe(c, tk)+'</section>'+
       (c.videos.length>1 ? videosHtml(c) : '')+
@@ -451,7 +482,7 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
           '<td><div class="cell">'+net(p)+'<span><b>'+p.format+' · <a href="'+p.url+'" target="_blank" rel="noopener">ver</a></b><small>'+p.date+'</small></span></div></td>'+
           '<td><button type="button" class="go" data-go="'+c.id+'">'+c.name+'</button></td><td><small style="color:var(--muted)">'+p.type+'</small></td>'+
           '<td class="r num">'+int(p.views)+'</td><td class="r num">'+ax(p,'likes')+int(p.likes)+'</td><td class="r num">'+int(p.comments)+'</td><td class="r num">'+pct(p.er)+'</td><td class="r num">'+costo(p.cpv)+'</td><td class="r num">'+costo(p.cpe)+'</td><td class="r num"><b>'+copM(p.emv)+'</b></td></tr>';}).join('')+
-      '</tbody></table></div><p class="hint">EMV = me gusta × '+cop(V.like)+' + comentarios × '+cop(V.comment)+' + compartidos × '+cop(V.share)+' + guardados × '+cop(V.save)+', valores de referencia de LCI. Compartidos y guardados se leen en TikTok; en historias, los datos vienen de los Insights del talento.</p></section>'+
+      '</tbody></table></div><p class="hint">EMV = me gusta × '+cop(V.like)+' + comentarios × '+cop(V.comment)+' + compartidos × '+cop(V.share)+' + guardados × '+cop(V.save)+', valores de referencia de LCI. Compartidos y guardados se leen en TikTok; en las ráfagas, los datos vienen de los Insights del talento.</p></section>'+
       '<footer>© 2026 Datalítica Colombia S.A.S.</footer>';
   }
 
