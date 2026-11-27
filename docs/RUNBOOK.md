@@ -122,6 +122,6 @@ El reporte lo construye y publica solo el OptiPlex, porque sus capturas (`datos/
 que la del reporte ya construido. Lo prueba `tests/test_candado.py`.
 
 - Desde el portátil: sube solo cambios de `config/`, `templates/` o `pipeline/`. La próxima corrida (lunes o jueves 7:00) publica.
-- Si un cambio de plantilla debe salir antes de la corrida, se aplica sobre el último `2026-10/index.html` automático, sin correr el build.
+- Si un cambio debe salir antes de la corrida: `python scripts/rearmar_desde_publicado.py .` rearma el reporte con la config y la plantilla actuales sobre las cifras publicadas por el OptiPlex (no usa la captura local). Revisa que solo cambie lo esperado antes de subir.
 - `--forzar` salta el candado; úsalo solo con una razón clara (por ejemplo, el OptiPlex fuera de servicio y una captura nueva en el portátil).
 - Origen: el 26-nov-2026 un build del portátil con la captura del 4-nov reemplazó las cifras del día (EMV $44,5 M → $39,0 M).
