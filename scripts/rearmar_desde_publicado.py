@@ -40,13 +40,15 @@ data = build_data(client, camp, None)
 data["campaign"]["captured_on"] = pub["campaign"]["captured_on"]
 
 # 2) Campos que dependen de la captura del OptiPlex → los publicados
+# Influencers cuya ventana de comparación vive en la config (el OptiPlex no la captura)
+VENTANAS_DE_CONFIG = {"zambo.design"}
 KEEP = ("followers", "reels", "lci", "marks", "med", "idx", "isMin", "charts", "talk", "talkLine", "top")
 pubc = {c["handle"]: c for c in pub["creators"]}
 for c in data["creators"]:
     old = pubc.get(c["handle"])
     # Solo si el publicado trae ventana de reels (viene de la captura del OptiPlex);
     # si no la trae, se usa la ventana de la config (p. ej. Juliana, 27-nov-2026).
-    if not old or not old.get("reels"):
+    if not old or not old.get("reels") or c["handle"] in VENTANAS_DE_CONFIG:
         continue
     for k in KEEP:
         if k in old:

@@ -293,7 +293,7 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
     var W=1080,H=280,base=228,top=58,max=Math.max.apply(null,c.reels.map(function(r){return r[0];})),n=c.reels.length,slot=(W-90)/n,bw=Math.min(46,slot*.55);
     var y=function(v){return base-(v/max)*(base-top);};
     var ym=y(c.med);
-    var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Reproducciones de sus últimos '+n+' reels. El de LCI tuvo '+k(c.reels[c.lci][0])+'; su mediana es '+k(c.med)+'.">';
+    var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Reproducciones de sus últimos '+n+' '+(c.kind==='short'?'shorts':'reels')+'. El de LCI tuvo '+k(c.reels[c.lci][0])+'; su mediana es '+k(c.med)+'.">';
     s+='<line class="med" x1="8" x2="'+(W-84)+'" y1="'+ym.toFixed(1)+'" y2="'+ym.toFixed(1)+'"/>';
     s+='<text class="ml" x="'+(W-78)+'" y="'+(ym+4).toFixed(1)+'">Mediana '+k(c.med)+'</text>';
     c.reels.forEach(function(r,i){
@@ -301,7 +301,7 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
       s+='<rect class="'+(paid?'paid':'org')+'" x="'+(cx-bw/2).toFixed(1)+'" y="'+yy.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(base-yy).toFixed(1)+'" rx="2"/>';
       s+='<text class="vl'+(paid?' pv':'')+'" x="'+cx.toFixed(1)+'" y="'+(yy-7).toFixed(1)+'" text-anchor="middle">'+k(v)+'</text>';
       if(r[1]) s+='<text class="xl'+(paid?' pv':'')+'" x="'+cx.toFixed(1)+'" y="'+(base+18)+'" text-anchor="middle">'+r[1]+'</text>';
-      if(paid) s+='<text class="vl pv" x="'+cx.toFixed(1)+'" y="'+(yy-24).toFixed(1)+'" text-anchor="middle">Reel de LCI</text>';
+      if(paid) s+='<text class="vl pv" x="'+cx.toFixed(1)+'" y="'+(yy-24).toFixed(1)+'" text-anchor="middle">'+(c.kind==='short'?'Short de LCI':'Reel de LCI')+'</text>';
       if(c.marks[i]) s+='<circle class="mk" cx="'+cx.toFixed(1)+'" cy="'+(yy-28).toFixed(1)+'" r="10"/><text class="mkt" x="'+cx.toFixed(1)+'" y="'+(yy-24.3).toFixed(1)+'" text-anchor="middle">'+c.marks[i]+'</text>';
     });
     s+='<line class="axis" x1="8" x2="'+(W-84)+'" y1="'+base+'" y2="'+base+'"/></svg>';
@@ -321,7 +321,7 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
       '<div class="kpi"><span class="l">Engagement</span><span class="v num">'+pct(c.er)+'</span><span class="d">'+ax(c.t,'likes')+int(c.t.likes)+' me gusta y '+int(c.t.comments)+' '+(c.posts.every(function(p){return p.format==='Historia'||p.format==='Ráfaga';})?'respuestas':'comentarios')+'</span></div>'
     ];
     if (c.idx !== null) t.push(c.charts.length
-      ? '<div class="kpi"><span class="l">Frente a su contenido habitual</span><span class="v num">'+[{name:c.videos[0].name,idx:c.idx}].concat(c.charts).map(function(g){return '<span class="'+(g.idx<1?'warn':'good')+'">'+n2.format(g.idx)+'×</span>';}).join(' · ')+'</span><span class="d">'+[c.videos[0].name].concat(c.charts.map(function(g){return g.name;})).join(' · ')+', frente a la mediana de sus reels</span></div>'
+      ? '<div class="kpi"><span class="l">Frente a su contenido habitual</span><span class="v num">'+[{idx:c.idx}].concat(c.charts).map(function(g){return '<span class="'+(g.idx<1?'warn':'good')+'">'+n2.format(g.idx)+'×</span>';}).join(' · ')+'</span><span class="d">'+[c.videos.length>1?c.videos[0].name:'Reel'].concat(c.charts.map(function(g){return g.kind==='short'?'Short':g.name;})).join(' · ')+', frente a la mediana de sus reels'+(c.charts.some(function(g){return g.kind==='short';})?' y shorts':'')+'</span></div>'
       : '<div class="kpi"><span class="l">Frente a su contenido habitual</span><span class="v num '+(c.idx<1?'warn':'good')+'">'+n2.format(c.idx)+'×</span><span class="d">Mediana de sus reels: '+k(c.med)+'</span></div>');
     if (tk) t.push('<div class="kpi"><span class="l">Comentarios positivos</span><span class="v num">'+nf.format(tk.pos/tk.read*100)+' %</span><span class="d">'+tk.pos+' de '+tk.read+' leídos</span></div>');
     if (c.t.clicks) t.push('<div class="kpi"><span class="l">Clics en el enlace</span><span class="v num">'+int(c.t.clicks)+'</span><span class="d">Visitas llevadas a LCI</span></div>');
@@ -378,20 +378,22 @@ function ax(o,k){return (o&&o.aprox&&o.aprox.indexOf(k)>=0)?'≈':'';}
           ? (c.done>1?'Sus '+c.done+' salidas sumaron':'Su salida sumó')+' <b>'+int(c.t.views)+' reproducciones</b> ('+c.posts.map(function(p){return etiqueta(p)+' '+int(p.views);}).join(', ')+'), con un engagement de '+pct(c.er)+'.'
           : 'El reel sumó <b>'+int(c.t.views)+' reproducciones</b>, el '+pct(c.reach)+' de sus seguidores, con un engagement de '+pct(c.er)+'.')+'</span></li>'+
         (c.idx!==null?'<li><span>'+(c.videos.length>1?'Su reel de Instagram del '+c.videos[0].name.toLowerCase()+' rindió':c.nets.length>1?'Su reel de Instagram rindió':'Rindió')+' <b>'+n2.format(c.idx)+'× frente a su contenido habitual</b>'+(c.isMin?': fue el de menos reproducciones entre sus últimos '+c.reels.length+' reels':'')+'. '+c.cause+'</span></li>':'')+
-        c.charts.map(function(g){return '<li><span>Su reel de Instagram del '+g.name.toLowerCase()+' rindió <b>'+n2.format(g.idx)+'× frente a su contenido habitual</b> (mediana de sus otros reels: '+k(g.med)+').</span></li>';}).join('')+
+        c.charts.map(function(g){return g.kind==='short'
+          ? '<li><span>Su short de YouTube rindió <b>'+n2.format(g.idx)+'× frente a su contenido habitual</b>'+(g.isMin?': fue el de menos reproducciones entre sus últimos '+g.reels.length+' shorts':'')+' (mediana de sus otros shorts: '+k(g.med)+').'+(g.note?' '+g.note:'')+'</span></li>'
+          : '<li><span>Su reel de Instagram del '+g.name.toLowerCase()+' rindió <b>'+n2.format(g.idx)+'× frente a su contenido habitual</b> (mediana de sus otros reels: '+k(g.med)+').</span></li>';}).join('')+
         (tk?'<li><span>La conversación fue <b>favorable</b>: '+c.talkLine+'</span></li>':'')+
         c.notes.map(function(x){return '<li><span>'+x+'</span></li>';}).join('')+
         '<li><span>Generó un <b>EMV de '+cop(c.t.emv)+'</b> (me gusta × '+cop(V.like)+' + comentarios × '+cop(V.comment)+(c.posts.some(function(p){return p.shares||p.saves;})?' + compartidos × '+cop(V.share)+' y guardados × '+cop(V.save):'')+'). '+
           (c.roi!==null ? 'Con un pago de '+cop(c.payShown)+', el ROI fue de '+roiTxt(c.roi)+(c.roiNote?' ('+c.roiNote+' para tener su ROI completo; estamos a la espera de esa información)':'')+'.' : 'El ROI se calcula cuando LCI confirme el valor pagado.')+'</span></li>'+
       '</ul></section>'+
 
-      (c.idx===null?'':'<section class="panel" aria-labelledby="h-g"><h2 id="h-g">Reel de LCI'+(c.charts.length?' del '+c.videos[0].name.toLowerCase():'')+' frente a sus últimos '+c.reels.length+' reels</h2>'+
+      (c.idx===null?'':'<section class="panel" aria-labelledby="h-g"><h2 id="h-g">Reel de LCI'+(c.charts.length&&c.videos.length>1?' del '+c.videos[0].name.toLowerCase():'')+' frente a sus últimos '+c.reels.length+' reels</h2>'+
         '<p class="hint">Reproducciones de cada reel por fecha de publicación, del más antiguo al más reciente. <b style="color:var(--accent)">Azul: reel de LCI</b> · gris: sus otros reels · la línea punteada es la mediana de sus otros reels.</p>'+
         '<div class="chart">'+chart(c)+'</div>'+
         (c.why.length?'<ul class="why">':'')+c.why.map(function(x){return '<li><span class="m">'+x[0]+'</span><div><b>'+x[1]+'</b>'+x[2]+'</div></li>';}).join('')+(c.why.length?'</ul>':'')+
       '</section>')+
-      c.charts.map(function(g, j){return '<section class="panel" aria-labelledby="h-g'+j+'"><h2 id="h-g'+j+'">Reel de LCI del '+g.name.toLowerCase()+' frente a sus últimos '+g.reels.length+' reels</h2>'+
-        '<p class="hint">Rindió <b>'+n2.format(g.idx)+'×</b> frente a la mediana de sus otros reels ('+k(g.med)+'). <b style="color:var(--accent)">Azul: reel de LCI</b> · gris: sus otros reels.</p>'+
+      c.charts.map(function(g, j){var sh=g.kind==='short'; return '<section class="panel" aria-labelledby="h-g'+j+'"><h2 id="h-g'+j+'">'+(sh?'Short de LCI frente a sus últimos '+g.reels.length+' shorts de YouTube':'Reel de LCI del '+g.name.toLowerCase()+' frente a sus últimos '+g.reels.length+' reels')+'</h2>'+
+        '<p class="hint">Rindió <b>'+n2.format(g.idx)+'×</b> frente a la mediana de sus otros '+(sh?'shorts':'reels')+' ('+k(g.med)+'). <b style="color:var(--accent)">Azul: '+(sh?'short':'reel')+' de LCI</b> · gris: sus otros '+(sh?'shorts':'reels')+'.'+(sh&&g.note?' '+g.note:'')+'</p>'+
         '<div class="chart">'+chart(g)+'</div></section>';}).join('')+
 
       (!tk?'':'<section class="panel" aria-labelledby="h-t"><h2 id="h-t">Conversación</h2><div class="talk">'+

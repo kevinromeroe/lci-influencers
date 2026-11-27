@@ -167,6 +167,21 @@ def _creator(c: dict[str, Any], v: dict[str, int]) -> dict[str, Any]:
         extra.append({"name": e["nombre"], "reels": [[r["views"], fecha_corta(r.get("posted_on"))] for r in b],
                       "lci": k, "marks": {}, "med": m, "idx": b[k]["views"] / m,
                       "isMin": b[k]["views"] == min(r["views"] for r in b)})
+    # Comparaciones adicionales de la config: otra pieza frente a sus anteriores del mismo tipo
+    # (Juliana: short de YouTube frente a sus últimos shorts; Kevin, 27-nov-2026)
+    for comp in c.get("comparaciones") or []:
+        b = [dict(r) for r in comp.get("baseline") or []]
+        k = next((i for i, r in enumerate(b) if r.get("lci")), None)
+        if k is None:
+            continue
+        p = next((p for p in c["publications"] if p["id"] == comp.get("pub")), None)
+        if p and (p.get("metrics") or {}).get("views"):
+            b[k]["views"] = max(b[k]["views"], p["metrics"]["views"])
+        m = median([r["views"] for i, r in enumerate(b) if i != k and not r.get("pinned")])
+        extra.append({"name": comp["nombre"], "kind": comp.get("tipo"), "note": comp.get("nota"),
+                      "reels": [[r["views"], fecha_corta(r.get("posted_on"))] for r in b],
+                      "lci": k, "marks": {}, "med": m, "idx": b[k]["views"] / m,
+                      "isMin": b[k]["views"] == min(r["views"] for r in b)})
     talk = c.get("talk")
     return {
         "id": re.sub(r"[^a-z0-9]+", "-", c["handle"].lower()).strip("-"), "handle": c["handle"], "name": c["name"],

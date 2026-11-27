@@ -198,6 +198,26 @@ creators:
       - {views: 67700, posted_on: "2026-11-23"}   # DgFfi6DyzDx
       - {views: 8697, posted_on: "2026-11-25", lci: true}   # DgK0gr4yTnX
 
+    # Short de YouTube (3-nov) frente a sus 11 shorts anteriores (lectura del 27-nov-2026)
+    comparaciones:
+      - nombre: Short de YouTube
+        tipo: short
+        pub: mIQGbfRLBOw
+        nota: "Publica pocos shorts: su ventana va de marzo de 2024 a noviembre de 2026."
+        baseline:
+          - {views: 3076, posted_on: "2024-03-19"}   # XM7MLe5jnp8
+          - {views: 15332, posted_on: "2024-05-05"}   # XZBl_6KuZVk
+          - {views: 971, posted_on: "2024-06-23"}   # gwhpsWHSkXI
+          - {views: 2169, posted_on: "2024-06-27"}   # ZwRy7MZFIbg
+          - {views: 3781, posted_on: "2024-07-31"}   # pqDH4vpkYt4
+          - {views: 1147, posted_on: "2025-03-19"}   # lJ7Tyfh9r40
+          - {views: 264, posted_on: "2025-03-21"}   # tGmtI1-jtCA
+          - {views: 621, posted_on: "2025-03-26"}   # 2-wswZoJno4
+          - {views: 6127, posted_on: "2025-04-02"}   # ip6gjU9-_rc
+          - {views: 1209, posted_on: "2025-05-09"}   # 2SekU3y0-6k
+          - {views: 72, posted_on: "2026-03-05"}   # YOHbF-RiTtc
+          - {views: 49, posted_on: "2026-11-03", lci: true}   # mIQGbfRLBOw
+
     cause: "Es el reel más reciente de su ventana (25 nov) y sigue sumando reproducciones; la comparación se actualiza en cada corrida."
     notes:
       - "Las ráfagas llevaron al menos <b>431 clics al enlace</b> de LCI (340 y 91 en las ráfagas 2 y 3; la captura de la ráfaga 1 no trae ese dato) y casi todas las visualizaciones fueron de sus seguidores (97 % a 99 %)."
