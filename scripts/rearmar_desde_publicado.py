@@ -44,7 +44,9 @@ KEEP = ("followers", "reels", "lci", "marks", "med", "idx", "isMin", "charts", "
 pubc = {c["handle"]: c for c in pub["creators"]}
 for c in data["creators"]:
     old = pubc.get(c["handle"])
-    if not old:
+    # Solo si el publicado trae ventana de reels (viene de la captura del OptiPlex);
+    # si no la trae, se usa la ventana de la config (p. ej. Juliana, 27-nov-2026).
+    if not old or not old.get("reels"):
         continue
     for k in KEEP:
         if k in old:

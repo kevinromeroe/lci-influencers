@@ -181,8 +181,24 @@ creators:
         posted_on: "2026-11-25"
         url: https://www.instagram.com/reel/DgK0gr4yTnX/
         type: Colaboración pagada
-        metrics: {views: 8672, likes: 614, comments: 14}     # lectura del 27-nov-2026
+        metrics: {views: 8697, likes: 614, comments: 14}     # lectura del 27-nov-2026
 
+    # Comparación: reel de LCI (25-nov) frente a sus 11 reels anteriores (lectura del 27-nov-2026)
+    baseline:
+      - {views: 66900, posted_on: "2026-07-27"}   # DbS1zIiPbaZ
+      - {views: 53500, posted_on: "2026-08-03"}   # DblLFHqSyOT
+      - {views: 246000, posted_on: "2026-08-12"}   # Db8MpArSY52
+      - {views: 80300, posted_on: "2026-08-20"}   # DcRL_mnxFv3
+      - {views: 567000, posted_on: "2026-08-27"}   # DcitQG9vj_v
+      - {views: 24300, posted_on: "2026-09-21"}   # DdkXEXmS5kw
+      - {views: 35900, posted_on: "2026-10-13"}   # Deb5Di9S3fC
+      - {views: 120000, posted_on: "2026-10-26"}   # De9j0XryX7z
+      - {views: 135000, posted_on: "2026-11-04"}   # DfUrSwryw8A
+      - {views: 13400, posted_on: "2026-11-17"}   # Df2LM7YSf1g
+      - {views: 67700, posted_on: "2026-11-23"}   # DgFfi6DyzDx
+      - {views: 8697, posted_on: "2026-11-25", lci: true}   # DgK0gr4yTnX
+
+    cause: "Es el reel más reciente de su ventana (25 nov) y sigue sumando reproducciones; la comparación se actualiza en cada corrida."
     notes:
       - "Las ráfagas llevaron al menos <b>431 clics al enlace</b> de LCI (340 y 91 en las ráfagas 2 y 3; la captura de la ráfaga 1 no trae ese dato) y casi todas las visualizaciones fueron de sus seguidores (97 % a 99 %)."
       - "De la ráfaga 1 solo tenemos el total de interacciones (117); las valoramos como me gusta, el valor más bajo, para no inflar el EMV."

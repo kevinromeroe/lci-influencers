@@ -48,7 +48,7 @@ class CuadreOctubre(unittest.TestCase):
         T = self.data["totals"]
         self.assertEqual(T["emv"], sum(c["t"]["emv"] for c in self.data["creators"] if c["summary"]))
         self.assertEqual(T["emv"], 34_618_200 + 342_130 + 842_400 + 492_350 + 273_000 + 3 * 7_200 + 614 * 7_200 + 14 * 10_500)
-        self.assertEqual(T["views"], 81_900 + 531 + 6_024 + 5_252 + 4_416 + 49 + 8_672)
+        self.assertEqual(T["views"], 81_900 + 531 + 6_024 + 5_252 + 4_416 + 49 + 8_697)
         self.assertEqual(T["inter"], 4_787 + 31 + 117 + 63 + 37 + 3 + 628)
         self.assertEqual(sum(n["emv"] for n in self.data["networks"]), T["emv"])
 
@@ -91,7 +91,12 @@ class CuadreOctubre(unittest.TestCase):
         self.assertEqual(j["t"]["pay"], 3 * round(28_466_353 / 3))
         self.assertEqual([p["format"] for p in j["posts"]][:3], ["Ráfaga"] * 3)
         self.assertEqual(j["t"]["clicks"], 431)
-        self.assertIsNone(j["idx"]); self.assertIsNone(j["talk"])
+        self.assertIsNone(j["talk"])
+        # Reel del 25-nov frente a sus 11 reels anteriores (mediana 67.700)
+        self.assertEqual(len(j["reels"]), 12)
+        self.assertEqual(j["med"], 67_700)
+        self.assertEqual(round(j["idx"], 2), 0.13)
+        self.assertTrue(j["isMin"])
         self.assertEqual(round(j["roi"] * 100), -78)
         self.assertEqual(j["id"], "zambo-design")
 
