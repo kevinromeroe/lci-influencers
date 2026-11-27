@@ -219,6 +219,18 @@ creators:
           - {views: 49, posted_on: "2026-11-03", lci: true}   # mIQGbfRLBOw
 
     cause: "Es el reel más reciente de su ventana (25 nov) y sigue sumando reproducciones; la comparación se actualiza en cada corrida."
+    # Comentarios del reel del 25-nov leídos el 27-nov-2026 (13 visibles de 14; el short no tiene comentarios)
+    talk:
+      read: 13
+      pos: 13
+      neu: 0
+      neg: 0
+      note: "Los 13 comentarios leídos del reel repiten la palabra «Diseño» (con o sin emoji): son respuestas de interés en el programa y ninguno es crítico. El short de YouTube no tiene comentarios."
+      line: "los 13 comentarios leídos del reel responden «Diseño», una señal de interés en el programa, y ninguno es crítico."
+      top:
+        - ["Diseño 🙌🏻", 1]
+        - ["Diseño :)", 1]
+        - ["Diseño", 1]
     notes:
       - "Las ráfagas llevaron al menos <b>431 clics al enlace</b> de LCI (340 y 91 en las ráfagas 2 y 3; la captura de la ráfaga 1 no trae ese dato) y casi todas las visualizaciones fueron de sus seguidores (97 % a 99 %)."
       - "De la ráfaga 1 solo tenemos el total de interacciones (117); las valoramos como me gusta, el valor más bajo, para no inflar el EMV."

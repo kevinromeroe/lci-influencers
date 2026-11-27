@@ -91,7 +91,7 @@ class CuadreOctubre(unittest.TestCase):
         self.assertEqual(j["t"]["pay"], 3 * round(28_466_353 / 3))
         self.assertEqual([p["format"] for p in j["posts"]][:3], ["Ráfaga"] * 3)
         self.assertEqual(j["t"]["clicks"], 431)
-        self.assertIsNone(j["talk"])
+        self.assertEqual((j["talk"]["read"], j["talk"]["pos"], j["talk"]["neg"]), (13, 13, 0))  # comentarios del reel
         # Reel del 25-nov frente a sus 11 reels anteriores (mediana 67.700)
         self.assertEqual(len(j["reels"]), 12)
         self.assertEqual(j["med"], 67_700)
